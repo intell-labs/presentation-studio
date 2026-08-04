@@ -1,0 +1,17 @@
+{
+  "should_trigger": [
+    "Ayúdame paso a paso a crear una presentación para conseguir aprobación de inversión.",
+    "Convierte estos documentos en un deck HTML autocontenido.",
+    "Mejora la narrativa, el diseño y las animaciones de esta presentación HTML."
+  ],
+  "should_not_trigger": [
+    "Corrige la ortografía de este correo.",
+    "Explícame qué significa margen bruto.",
+    "Crea una sola imagen promocional."
+  ],
+  "first_response_contract": {
+    "announces_four_stages": true,
+    "asks_one_question": true,
+    "does_not_build_full_deck": true
+  }
+}

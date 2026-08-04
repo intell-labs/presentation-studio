@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0",
+  "policy": "reference-only",
+  "bundled_external_code": false,
+  "references": [
+    {
+      "name": "guizang-ppt-skill",
+      "repository": "https://github.com/op7418/guizang-ppt-skill",
+      "reviewed_commit": "929c2ecb63a22b54d400c4911ed70bf96c2b355d",
+      "license": "AGPL-3.0",
+      "included_paths": [],
+      "use": "Product and visual-workflow reference only."
+    },
+    {
+      "name": "emilkowalski-skills",
+      "repository": "https://github.com/emilkowalski/skills",
+      "reviewed_commit": "da80201b64de7d608a6dc5f723797ce6c65b692b",
+      "license": "MIT",
+      "included_paths": [],
+      "use": "Motion and prototype-review reference only."
+    },
+    {
+      "name": "html-ppt-skill",
+      "repository": "https://github.com/lewislulu/html-ppt-skill",
+      "reviewed_commit": "f3a8435d3901697d5ac5e64d356c933637e43107",
+      "license": "MIT",
+      "included_paths": [],
+      "use": "Runtime and layout-capability reference only."
+    },
+    {
+      "name": "frontend-slides",
+      "repository": "https://github.com/zarazhangrui/frontend-slides",
+      "reviewed_commit": "9906a34d640d2111f724544cbc50f7f130569ae1",
+      "license": "MIT",
+      "included_paths": [],
+      "use": "Visual exploration and fixed-stage reference only."
+    },
+    {
+      "name": "ppt-agent-skill",
+      "repository": "https://github.com/Akxan/ppt-agent-skill",
+      "reviewed_commit": "01825dee2ad40a8c719824252605396b9a570d57",
+      "license": "MIT",
+      "included_paths": [],
+      "use": "Research and planning-workflow reference only."
+    }
+  ]
+}

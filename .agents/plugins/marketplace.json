@@ -1,0 +1,20 @@
+{
+  "name": "ppt-studio-marketplace",
+  "interface": {
+    "displayName": "PPT Studio by intellbits"
+  },
+  "plugins": [
+    {
+      "name": "ppt-studio",
+      "source": {
+        "source": "local",
+        "path": "./plugins/ppt-studio"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

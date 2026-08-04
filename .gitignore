@@ -1,0 +1,8 @@
+.DS_Store
+__pycache__/
+*.pyc
+.presentation-studio/
+dist/
+build/
+renders/
+*.log
