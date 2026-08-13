@@ -190,7 +190,7 @@
 <main id="top">
 
   <div class="wrap hero">
-    <span class="eyebrow">Open source · Apache-2.0 · v1.0.1</span>
+    <span class="eyebrow">Open source · Apache-2.0 · v1.0.4</span>
     <h1>A presentation director for your AI agent.</h1>
     <p class="lede">
       PPT Studio turns “make me a deck” into a real conversation. It asks <strong>one question at a time</strong> —
@@ -217,7 +217,7 @@
       <li><h3>Subject-matter research</h3><p>Works the topic as a domain expert and surfaces the evidence behind each claim.</p></li>
       <li><h3>Narrative</h3><p>Builds the arc — context to decision — before a single layout exists.</p></li>
       <li><h3>Content approval</h3><p>You sign off on the words. This is the gate to production.</p></li>
-      <li><h3>Visual exploration</h3><p>Compares a two- or three-slide microdeck so you pick a direction cheaply.</p></li>
+      <li><h3>Visual exploration</h3><p>Compares isolated two- or three-slide microdecks without duplicate toolbars or controls over the artwork.</p></li>
       <li><h3>Production</h3><p>Builds the full deck: text editing, save status, deep links, state-aware navigation.</p></li>
       <li><h3>Motion</h3><p>Restrained animation that supports the point instead of performing.</p></li>
       <li><h3>Final QA</h3><p>Re-validates the HTML after browser edits, so what you present is what you approved.</p></li>
@@ -229,14 +229,14 @@
     <div class="grid">
       <div class="card"><h3>One file, no server</h3><p>A fixed 16:9 self-contained HTML deck. No build step, no CDN, no broken link five minutes before you present.</p></div>
       <div class="card"><h3>Light, dark, and your brand</h3><p>Three themes on a documented token contract, switchable from inside the deck.</p></div>
-      <div class="card"><h3>Editable in the browser</h3><p>Fix a typo on the slide itself, with save status and a validator that checks the result.</p></div>
+      <div class="card"><h3>Editable in the browser</h3><p>Click text or a safe visual component to open a nearby toolbar for type, color, borders, radius, shadow, and opacity, with safe ranges and rendered QA.</p></div>
       <div class="card"><h3>Your content stays yours</h3><p>The runtime is Apache-2.0 and carries discreet generator metadata — never a watermark on your slides.</p></div>
     </div>
   </section>
 
   <section id="install" class="wrap">
     <h2>Install</h2>
-    <p class="sub">Pick your host. The package exposes a single canonical skill, <code>presentation-director</code>, and needs no other presentation framework.</p>
+    <p class="sub">Pick your host. The package exposes a single canonical skill, <code>ppt-presentation-studio</code>, and needs no other presentation framework.</p>
 
     <div class="install">
 
@@ -244,21 +244,27 @@
         <div class="step-head"><h3>Claude Code</h3><span>marketplace</span></div>
         <div class="copy-wrap">
 <pre><code>claude plugin marketplace add intellbits/ppt-studio
-claude plugin install ppt-studio@ppt-studio-marketplace</code></pre>
+claude plugin install presentation-studio@ppt-studio-marketplace
+<span class="c"># Invoke: /presentation-studio:ppt-presentation-studio</span></code></pre>
         </div>
       </div>
 
       <div class="step">
-        <div class="step-head"><h3>ChatGPT and Codex</h3><span>marketplace</span></div>
-        <p>Register <code>intellbits/ppt-studio</code> as a marketplace, then install <code>ppt-studio</code> from <code>ppt-studio-marketplace</code>. Invoke it explicitly with <code>$presentation-director</code>, or just ask for a presentation.</p>
+        <div class="step-head"><h3>Codex</h3><span>marketplace</span></div>
+        <p>Register <code>intellbits/ppt-studio</code> as a marketplace, then install <code>presentation-studio</code> from <code>ppt-studio-marketplace</code>. Invoke it with <code>$ppt-presentation-studio</code> or let Codex select it automatically.</p>
+      </div>
+
+      <div class="step">
+        <div class="step-head"><h3>ChatGPT</h3><span>skill upload</span></div>
+        <p>Upload <code>ppt-presentation-studio-1.0.4-chatgpt.zip</code> from Skills → Create → Upload from your computer. Availability and upload permissions depend on the user’s plan and workspace settings.</p>
       </div>
 
       <div class="step">
         <div class="step-head"><h3>Claude Chat</h3><span>skill upload</span></div>
         <p>
-          Download <code>presentation-director-1.0.1-claude.zip</code> from the
+          Download <code>ppt-presentation-studio-1.0.4-claude.zip</code> from the
           <a href="https://github.com/intellbits/ppt-studio/releases/latest">latest release</a>
-          and upload it under Customize → Skills. The archive holds the skill folder at its root and pulls in nothing external.
+          and upload it under Customize → Skills. It appears as <strong>Presentation Studio by intell labs (part of intellbits.com)</strong>; the archive holds the skill folder at its root and pulls in nothing external.
         </p>
       </div>
 
@@ -268,7 +274,7 @@ claude plugin install ppt-studio@ppt-studio-marketplace</code></pre>
 <pre><code>git clone https://github.com/intellbits/ppt-studio.git
 cd ppt-studio
 python3 scripts/validate_all.py   <span class="c"># cross-target checks</span>
-python3 scripts/build_release.py  <span class="c"># plugin + skill ZIPs in dist/</span></code></pre>
+python3 scripts/build_release.py  <span class="c"># Codex + ChatGPT + Claude ZIPs in dist/</span></code></pre>
         </div>
         <p>Then point the marketplace at the absolute repository path instead of <code>intellbits/ppt-studio</code>.</p>
       </div>

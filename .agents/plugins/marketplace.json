@@ -1,14 +1,14 @@
 {
   "name": "ppt-studio-marketplace",
   "interface": {
-    "displayName": "PPT Studio by intellbits"
+    "displayName": "Presentation Studio by intell labs (part of intellbits.com)"
   },
   "plugins": [
     {
-      "name": "ppt-studio",
+      "name": "presentation-studio",
       "source": {
         "source": "local",
-        "path": "./plugins/ppt-studio"
+        "path": "./plugins/presentation-studio"
       },
       "policy": {
         "installation": "AVAILABLE",

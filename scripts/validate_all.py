@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import ast
 import json
+import re
 import subprocess
 import sys
 import tempfile
@@ -15,8 +16,8 @@ sys.dont_write_bytecode = True
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PLUGIN = ROOT / "plugins" / "ppt-studio"
-SKILL = PLUGIN / "skills" / "presentation-director"
+PLUGIN = ROOT / "plugins" / "presentation-studio"
+SKILL = PLUGIN / "skills" / "ppt-presentation-studio"
 
 
 def read_json(path: Path) -> dict:
@@ -47,22 +48,25 @@ def check_json_and_versions(errors: list[str]) -> None:
         PLUGIN / ".claude-plugin" / "plugin.json",
     ]
     for path in version_paths:
-        if values[path].get("version") != expected:
+        version = values[path].get("version")
+        if version != expected:
             errors.append(f"Version drift in {path.relative_to(ROOT)}")
+    if not isinstance(expected, str) or not re.fullmatch(r"\d+\.\d+\.\d+", expected):
+        errors.append("Release version must use plain MAJOR.MINOR.PATCH without date or build suffixes.")
     claude_entry = values[ROOT / ".claude-plugin" / "marketplace.json"]["plugins"][0]
     if claude_entry.get("version") != expected:
         errors.append("Version drift in Claude marketplace.")
     openai_entry = values[ROOT / ".agents" / "plugins" / "marketplace.json"]["plugins"][0]
-    if openai_entry.get("source", {}).get("path") != "./plugins/ppt-studio":
+    if openai_entry.get("source", {}).get("path") != "./plugins/presentation-studio":
         errors.append("OpenAI marketplace source path is invalid.")
-    if claude_entry.get("source") != "./plugins/ppt-studio":
+    if claude_entry.get("source") != "./plugins/presentation-studio":
         errors.append("Claude marketplace source path is invalid.")
 
 
 def check_skill(errors: list[str]) -> None:
     skill_md = SKILL / "SKILL.md"
     source = skill_md.read_text(encoding="utf-8")
-    if not source.startswith("---\nname: presentation-director\n"):
+    if not source.startswith("---\nname: ppt-presentation-studio\n"):
         errors.append("SKILL.md frontmatter is invalid.")
     if source.count("\n---\n") < 1:
         errors.append("SKILL.md frontmatter is not closed.")
@@ -113,7 +117,7 @@ def main() -> int:
         project = Path(temporary) / "presentation-project.json"
         if project.exists():
             data = read_json(project)
-            if data.get("schema_version") != "1.1":
+            if data.get("schema_version") != "1.4":
                 errors.append("Starter project schema version is stale.")
             data["project"]["title"] = "Validation deck"
             data["project"]["presentation_type"] = "corporate"
@@ -137,6 +141,39 @@ def main() -> int:
                 "open_questions": [],
             }]
             data["visual_exploration"]["selected"] = "option-a"
+            data["visual_exploration"]["gallery_qa"] = {
+                "status": "completed",
+                "report": "work/gallery-qa/report.json",
+                "completed_viewports": ["desktop", "laptop", "phone_portrait", "phone_landscape"],
+                "issues": [],
+            }
+            data["visual_qa"]["completed"] = [
+                "desktop", "laptop", "phone_portrait", "phone_landscape"
+            ]
+            data["visual_qa"]["all_slides_rendered"] = True
+            data["visual_qa"]["all_states_rendered"] = True
+            data["visual_qa"]["safe_areas_passed"] = True
+            data["visual_qa"]["typography_spacing_passed"] = True
+            data["visual_qa"]["geometry_report"] = "work/visual-qa/report.json"
+            data["visual_qa"]["harmony_review"] = {
+                "status": "completed",
+                "reviewer": "structural-test",
+                "artifact": "work/visual-qa/review.html",
+                "reviewed_slides": ["hoja-01"],
+                "issues": [],
+            }
+            data["delivery"]["route_evaluation"].update({
+                "status": "completed",
+                "host": "validation",
+                "approved": True,
+            })
+            for route in data["delivery"]["route_evaluation"]["routes"]:
+                if route["id"] != "self-contained-html":
+                    route.update({
+                        "availability": "unavailable",
+                        "recommendation": "not-recommended",
+                        "reason": "Not required by the validation fixture.",
+                    })
             data["approvals"] = {key: True for key in data["approvals"]}
             project.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
             run_command([

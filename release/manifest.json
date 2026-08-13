@@ -1,9 +1,9 @@
 {
-  "name": "ppt-studio",
-  "skill": "presentation-director",
-  "version": "1.0.1",
+  "name": "presentation-studio",
+  "skill": "ppt-presentation-studio",
+  "version": "1.0.4",
   "license": "Apache-2.0",
-  "plugin_path": "plugins/ppt-studio",
+  "plugin_path": "plugins/presentation-studio",
   "description": "Guided creation of thoughtful, portable HTML presentations.",
   "targets": [
     "chatgpt-codex",

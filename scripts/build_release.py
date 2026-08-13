@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build deterministic PPT Studio plugin and Claude Chat release archives."""
+"""Build deterministic Codex plugin, ChatGPT skill, and Claude skill archives."""
 
 from __future__ import annotations
 
@@ -67,12 +67,14 @@ def main() -> int:
         shutil.rmtree(DIST)
     DIST.mkdir(parents=True, exist_ok=True)
 
-    plugin_zip = DIST / f"ppt-studio-{version}-plugin.zip"
-    claude_zip = DIST / f"presentation-director-{version}-claude.zip"
-    build_archive(plugin_root, plugin_zip, "ppt-studio")
+    codex_plugin_zip = DIST / f"presentation-studio-{version}-codex-plugin.zip"
+    chatgpt_zip = DIST / f"{skill_name}-{version}-chatgpt.zip"
+    claude_zip = DIST / f"{skill_name}-{version}-claude.zip"
+    build_archive(plugin_root, codex_plugin_zip, "presentation-studio")
+    build_archive(skill_root, chatgpt_zip, skill_name)
     build_archive(skill_root, claude_zip, skill_name)
 
-    archives = [plugin_zip, claude_zip]
+    archives = [codex_plugin_zip, chatgpt_zip, claude_zip]
     checksum_lines = [f"{sha256(path)}  {path.name}" for path in archives]
     (DIST / "SHA256SUMS").write_text("\n".join(checksum_lines) + "\n", encoding="utf-8")
     for path in archives:

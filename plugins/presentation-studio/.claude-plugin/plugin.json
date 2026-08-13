@@ -1,0 +1,17 @@
+{
+  "name": "presentation-studio",
+  "version": "1.0.4",
+  "description": "Guided, research-aware creation of polished self-contained HTML presentations.",
+  "author": {
+    "name": "intell labs (part of intellbits.com)"
+  },
+  "homepage": "https://intellbits.com",
+  "license": "Apache-2.0",
+  "keywords": [
+    "presentations",
+    "slides",
+    "html",
+    "storytelling",
+    "pitch-deck"
+  ]
+}
