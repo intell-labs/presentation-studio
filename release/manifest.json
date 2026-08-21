@@ -1,6 +1,6 @@
 {
   "name": "presentation-studio",
-  "skill": "ppt-presentation-studio",
+  "skill": "presentation-studio",
   "version": "1.0.4",
   "license": "Apache-2.0",
   "plugin_path": "plugins/presentation-studio",

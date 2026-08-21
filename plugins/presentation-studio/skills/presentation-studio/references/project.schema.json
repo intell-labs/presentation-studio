@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:ppt-studio:presentation-project:schema:1.4",
-  "title": "PPT Studio presentation project",
+  "$id": "urn:presentation-studio:presentation-project:schema:1.4",
+  "title": "Presentation Studio presentation project",
   "type": "object",
   "required": [
     "schema_version",

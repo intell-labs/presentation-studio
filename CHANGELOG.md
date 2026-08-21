@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Consolidated the product, marketplace, canonical skill, documentation, runtime metadata, and release packages under the Presentation Studio and intell labs identities.
+- Moved all repository and installation references to `intell-labs/presentation-studio` and renamed the marketplace to `presentation-studio-marketplace`.
+- Renamed the canonical skill to `presentation-studio` and removed obsolete public brand references.
+
 ## 1.0.4 - 2026-08-05
 
 - Added separately labeled ChatGPT and Claude skill ZIPs while retaining a distinct Codex plugin archive.
@@ -29,7 +35,7 @@
 
 ## 1.0.2 - 2026-08-04
 
-- Renamed the canonical skill from `presentation-director` to `ppt-presentation-studio` for easier discovery in ChatGPT, Codex, Claude Code, and Claude Chat.
+- Renamed the canonical skill from its original working name to its current public identity for easier discovery in ChatGPT, Codex, Claude Code, and Claude Chat.
 - Renamed the Claude Chat release archive and updated all package paths, invocations, documentation, and validators.
 - Replaced the presentation runtime with the `base-deck-v2` contract: one bottom-right control cluster, an icon menu anchored upward and left, audience-safe delivery, explicit author mode, arrows-only mobile chrome, and stronger accessibility preferences.
 - Rebuilt visual exploration so every microdeck is isolated in sandboxed previews with its internal controls removed.
@@ -41,14 +47,14 @@
 
 ## 1.0.1 - 2026-08-04
 
-- Added explicit intellbits attribution across manifests, documentation, and release packages.
+- Added explicit developer attribution across manifests, documentation, and release packages.
 - Added trademark guidance that separates open-source code rights from brand rights.
 - Added generator metadata and a discreet About panel to the self-contained HTML runtime.
 - Documented ownership of presentation content and third-party asset responsibilities.
 
 ## 1.0.0 - 2026-08-04
 
-- Rebuilt PPT Studio as an original, self-contained implementation.
+- Rebuilt the product as an original, self-contained implementation.
 - Removed bundled copies of external presentation repositories.
 - Added OpenAI/Codex and Claude Code plugin manifests and marketplaces.
 - Added a Claude Chat skill ZIP release target.

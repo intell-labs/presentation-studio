@@ -1,10 +1,10 @@
 # Internal capability routing
 
-PPT Studio is autonomous. Use only its own workflow, scripts, references, and runtime. Never require or copy an external presentation skill.
+Presentation Studio is autonomous. Use only its own workflow, scripts, references, and runtime. Never require or copy an external presentation skill.
 
 ## Default route
 
-Use `assets/runtime/base-deck.html` as the starting runtime for self-contained HTML. Copy it before authoring the full deck; replace its sample slides and extend its token system instead of replacing its navigation, editing, saving, theme, or accessibility contracts. Preserve the `ppt-studio-runtime` metadata, `data-ppt-studio-runtime="base-deck-v2"`, unified `deck-chrome`, audience/author split, edit baselines, core control IDs, dialogs, attribution block, and runtime script. A deck that recreates look-alike controls with a separate script is not a PPT Studio runtime.
+Use `assets/runtime/base-deck.html` as the starting runtime for self-contained HTML. Copy it before authoring the full deck; replace its sample slides and extend its token system instead of replacing its navigation, editing, saving, theme, or accessibility contracts. Preserve the `presentation-studio-runtime` metadata, `data-presentation-studio-runtime="base-deck-v2"`, unified `deck-chrome`, audience/author split, edit baselines, core control IDs, dialogs, attribution block, and runtime script. A deck that recreates look-alike controls with a separate script is not a Presentation Studio runtime.
 
 For structural revisions, keep a deterministic generator under `.work/`, write its candidate to a temporary file, and merge with `scripts/preserve_edits.py`. Never have the generator write directly over the user's current saved deck.
 

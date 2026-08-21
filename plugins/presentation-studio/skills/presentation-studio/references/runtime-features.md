@@ -87,7 +87,7 @@ Use this order:
 1. If a previously authorized file handle exists, write to it on `Cmd/Ctrl+S`.
 2. Otherwise offer `Vincular archivo existente` or `Guardar como…` through the File System Access API when available.
 3. If unsupported or denied, download a complete updated HTML copy.
-4. Before binding an existing file, verify that it is a compatible PPT Studio deck and require confirmation if its title differs.
+4. Before binding an existing file, verify that it is a compatible Presentation Studio deck and require confirmation if its title differs.
 5. Never claim a fallback download overwrote the original.
 
 Serialize the current DOM, including user edits and embedded project data, while removing transient open-menu and edit-mode states.

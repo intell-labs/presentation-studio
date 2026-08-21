@@ -3,7 +3,7 @@
   "version": "1.0.4",
   "description": "Guided, research-aware creation of polished self-contained HTML presentations.",
   "author": {
-    "name": "intell labs (part of intellbits.com)"
+    "name": "intell labs"
   },
   "license": "Apache-2.0",
   "keywords": [
@@ -18,7 +18,7 @@
     "displayName": "Presentation Studio",
     "shortDescription": "Create thoughtful HTML presentations step by step.",
     "longDescription": "Presentation Studio guides audience discovery, research, narrative, voice, visual exploration, production, adaptive themes, motion and final QA before delivering a portable presentation.",
-    "developerName": "intell labs (part of intellbits.com)",
+    "developerName": "intell labs",
     "category": "Productivity",
     "capabilities": [
       "Interactive",

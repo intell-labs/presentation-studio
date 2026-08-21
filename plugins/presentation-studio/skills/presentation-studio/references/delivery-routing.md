@@ -1,6 +1,6 @@
 # Delivery routing
 
-PPT Studio owns the presentation strategy, content, visual system, self-contained HTML, and runtime. Hosting and native-presentation tools are optional delivery workers, never competing design systems.
+Presentation Studio owns the presentation strategy, content, visual system, self-contained HTML, and runtime. Hosting and native-presentation tools are optional delivery workers, never competing design systems.
 
 ## Infer before asking
 
@@ -8,7 +8,7 @@ Evaluate these routes after content and visual direction are approved, before fu
 
 | Route | Recommend when | Usually skip when |
 | --- | --- | --- |
-| Self-contained HTML | Always. It is the canonical PPT Studio artifact. | Never. |
+| Self-contained HTML | Always. It is the canonical Presentation Studio artifact. | Never. |
 | Hosted site | The user needs a shareable URL, remote or mobile access, controlled access, a custom domain, or managed distribution. | The user needs only a local/offline file, already chose their own hosting, or no hosting capability is available. |
 | Native presentation | The user needs editable PPTX or Google Slides, corporate handoff, or an offline presentation workflow. | HTML interaction and visual fidelity are primary and no native file is required. |
 

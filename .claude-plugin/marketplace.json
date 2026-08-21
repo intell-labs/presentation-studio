@@ -1,7 +1,7 @@
 {
-  "name": "ppt-studio-marketplace",
+  "name": "presentation-studio-marketplace",
   "owner": {
-    "name": "intell labs (part of intellbits.com)"
+    "name": "intell labs"
   },
   "metadata": {
     "description": "Open-source presentation workflows for Claude Code."
@@ -13,9 +13,9 @@
       "description": "Create, improve, and validate self-contained HTML presentations through a guided workflow.",
       "version": "1.0.4",
       "author": {
-        "name": "intell labs (part of intellbits.com)"
+        "name": "intell labs"
       },
-      "homepage": "https://intellbits.com",
+      "homepage": "https://github.com/intell-labs/presentation-studio",
       "license": "Apache-2.0",
       "category": "productivity",
       "keywords": [

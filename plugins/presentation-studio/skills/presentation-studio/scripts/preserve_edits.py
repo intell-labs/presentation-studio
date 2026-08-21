@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Merge browser-edited PPT Studio text and element styles into a regenerated deck.
+"""Merge browser-edited Presentation Studio text and element styles into a regenerated deck.
 
 Editable elements are matched by stable ``data-edit-id`` values. The runtime
 stores ``data-edit-baseline`` hashes, which let this tool preserve only content
@@ -300,7 +300,7 @@ def write_atomic(path: pathlib.Path, content: str) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Preserve browser text edits while accepting a regenerated PPT Studio deck."
+        description="Preserve browser text edits while accepting a regenerated Presentation Studio deck."
     )
     parser.add_argument("existing", type=pathlib.Path, help="Last saved browser-edited HTML")
     parser.add_argument("generated", type=pathlib.Path, help="Freshly generated HTML")

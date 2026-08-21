@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create the human-editable PPT Studio project contract and review files."""
+"""Create the human-editable Presentation Studio project contract and review files."""
 
 from __future__ import annotations
 
@@ -188,7 +188,7 @@ def build_contract() -> dict:
                         "id": "self-contained-html",
                         "availability": "available",
                         "recommendation": "required",
-                        "reason": "Canonical PPT Studio output.",
+                        "reason": "Canonical Presentation Studio output.",
                     },
                     {
                         "id": "hosted-site",

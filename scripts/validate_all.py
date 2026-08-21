@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run structural, syntax, runtime, and release checks for PPT Studio."""
+"""Run structural, syntax, runtime, and release checks for Presentation Studio."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ sys.dont_write_bytecode = True
 
 ROOT = Path(__file__).resolve().parents[1]
 PLUGIN = ROOT / "plugins" / "presentation-studio"
-SKILL = PLUGIN / "skills" / "ppt-presentation-studio"
+SKILL = PLUGIN / "skills" / "presentation-studio"
 
 
 def read_json(path: Path) -> dict:
@@ -66,7 +66,7 @@ def check_json_and_versions(errors: list[str]) -> None:
 def check_skill(errors: list[str]) -> None:
     skill_md = SKILL / "SKILL.md"
     source = skill_md.read_text(encoding="utf-8")
-    if not source.startswith("---\nname: ppt-presentation-studio\n"):
+    if not source.startswith("---\nname: presentation-studio\n"):
         errors.append("SKILL.md frontmatter is invalid.")
     if source.count("\n---\n") < 1:
         errors.append("SKILL.md frontmatter is not closed.")
@@ -193,7 +193,7 @@ def main() -> int:
         for error in errors:
             print(f"ERROR: {error}")
         return 1
-    print("PPT Studio passes cross-target validation.")
+    print("Presentation Studio passes cross-target validation.")
     return 0
 
 

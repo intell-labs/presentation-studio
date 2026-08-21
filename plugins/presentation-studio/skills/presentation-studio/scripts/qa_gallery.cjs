@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* Rendered loading, responsive-layout, and embedded-slide QA for PPT Studio comparison galleries. */
+/* Rendered loading, responsive-layout, and embedded-slide QA for Presentation Studio comparison galleries. */
 'use strict';
 
 const fs = require('fs');

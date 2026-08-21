@@ -1,9 +1,9 @@
 ---
-name: ppt-presentation-studio
+name: presentation-studio
 description: Guide, research, plan, design, build, enhance, and validate professional presentations as self-contained HTML by default, with optional presenter tools, PDF, and PPTX. Use for new decks, pitch decks, financial or corporate presentations, reports, talks, training, product launches, converting source documents into slides, or improving an existing HTML/PPTX presentation. Use a one-question-at-a-time workflow, validate audience, brand, speaker voice, expert perspective, narrative, content, visual direction, motion, and final rendered text before delivery.
 ---
 
-# PPT Presentation Studio
+# Presentation Studio
 
 Create presentations through deliberate checkpoints. Prefer a portable, fixed-stage, self-contained HTML file. Do not require any other installed skill. Optional hosting or native-presentation capabilities may extend delivery only when they are available, useful, and approved by the user.
 
@@ -20,7 +20,7 @@ Create presentations through deliberate checkpoints. Prefer a portable, fixed-st
 6. Do not generate illustrations unless the user explicitly requests them.
 7. Avoid generic AI language. Match the speaker's real vocabulary, regional register, directness, and sentence rhythm.
 8. Do not execute a large batch without validation. Use a two- or three-slide microdeck first.
-9. Include only runtime features the user needs. Default to audience-view delivery with an always-discoverable Author section in the unified menu, author text editing, a contextual per-element toolbar for text and safe visual styles, a full typography editor constrained to approved families and semantic size/leading bounds, keyboard navigation, deep links, unsaved-change status, light/dark/custom themes, edit preservation, and reduced-motion support. These are supplied by the protected PPT Studio runtime, not reimplemented per deck.
+9. Include only runtime features the user needs. Default to audience-view delivery with an always-discoverable Author section in the unified menu, author text editing, a contextual per-element toolbar for text and safe visual styles, a full typography editor constrained to approved families and semantic size/leading bounds, keyboard navigation, deep links, unsaved-change status, light/dark/custom themes, edit preservation, and reduced-motion support. These are supplied by the protected Presentation Studio runtime, not reimplemented per deck.
 10. Audit the final rendered HTML text after browser edits; do not trust only the earlier content plan.
 11. Treat the first generated deck as a professional first draft, not a generic layout sample. Use the approved voice, evidence, visual forms, brand hierarchy, anchor slides, and audience decision to make each page specific.
 12. A static pass or a few representative screenshots never prove visual quality. Every slide, every required state including state zero, every theme, and every required viewport must pass rendered geometry QA and an explicit harmony review before delivery.
@@ -101,11 +101,11 @@ Read [delivery-routing.md](references/delivery-routing.md), [runtime-features.md
 
 Before full production, infer whether hosting or a native presentation format would materially help this project. Ask one concise delivery question with only the routes that are both relevant and available. Record the evaluation and the user's selection in `delivery.route_evaluation`. Do not repeat the question when the user already settled the delivery route.
 
-Self-contained HTML remains the canonical PPT Studio output and the only design/runtime owner. Optional routes are additive workers: they consume the approved contract and validated HTML, but may not redesign the deck, replace its runtime, weaken its QA, or block HTML delivery if they fail. Publishing, connecting a provider, installing a tool, or creating an external artifact always requires explicit approval.
+Self-contained HTML remains the canonical Presentation Studio output and the only design/runtime owner. Optional routes are additive workers: they consume the approved contract and validated HTML, but may not redesign the deck, replace its runtime, weaken its QA, or block HTML delivery if they fail. Publishing, connecting a provider, installing a tool, or creating an external artifact always requires explicit approval.
 
 Confirm only relevant optional features. Begin every full deck by copying `assets/runtime/base-deck.html` into the output file. Generate on its fixed 1920 x 1080 stage scaled uniformly to the viewport. Do not reflow slide content on phones. Embed required images, icons, CSS, JS, and licensed fonts in the final file whenever feasible. Do not import external presentation frameworks or require other skills.
 
-Treat the copied runtime as protected infrastructure. Replace its sample slides and extend its design tokens and layout CSS, but preserve the runtime metadata, `data-ppt-studio-runtime="base-deck-v2"`, stage scaling, `prev · counter · next · menu` control order, audience/author separation, save workflow, theme dialog, Help and About dialogs, attribution block, edit baselines, and navigation script. Do not create a separate menu, navigation, save, theme, or keyboard runtime that merely resembles these features. Add approved optional modules as extensions to this runtime.
+Treat the copied runtime as protected infrastructure. Replace its sample slides and extend its design tokens and layout CSS, but preserve the runtime metadata, `data-presentation-studio-runtime="base-deck-v2"`, stage scaling, `prev · counter · next · menu` control order, audience/author separation, save workflow, theme dialog, Help and About dialogs, attribution block, edit baselines, and navigation script. Do not create a separate menu, navigation, save, theme, or keyboard runtime that merely resembles these features. Add approved optional modules as extensions to this runtime.
 
 Keep a deterministic generator, normally `.work/build_presentation.py`, for structural changes. Never overwrite a saved browser-edited deck directly. Generate a fresh candidate, then preserve changed editable fields and create a backup with:
 
@@ -213,7 +213,7 @@ Embed a copy of the current project contract inside the final HTML as:
 
 ## Implementation and licensing
 
-PPT Studio is an original, self-contained Apache-2.0 implementation developed by intellbits. External repositories may be evaluated as conceptual references, but never copy their source, templates, assets, or instruction files into an output or into this plugin. Do not require users to install another presentation skill. Preserve the supplied generator metadata, About panel, license notice, and attribution in redistributed runtime or source packages. Do not add a permanent intellbits mark to presentation slides unless the user explicitly requests it. Respect the separate trademark rules in `TRADEMARKS.md`.
+Presentation Studio is an original, self-contained Apache-2.0 implementation developed by intell labs. External repositories may be evaluated as conceptual references, but never copy their source, templates, assets, or instruction files into an output or into this plugin. Do not require users to install another presentation skill. Preserve the supplied generator metadata, About panel, license notice, and attribution in redistributed runtime or source packages. Do not add a permanent intell labs mark to presentation slides unless the user explicitly requests it. Respect the separate trademark rules in `TRADEMARKS.md`.
 
 ## Resource map
 
@@ -227,7 +227,7 @@ PPT Studio is an original, self-contained Apache-2.0 implementation developed by
 - [delivery-routing.md](references/delivery-routing.md): inference, user confirmation, optional hosting, native formats, and host equivalents.
 - [theme-system.md](references/theme-system.md): light, dark, and brand-custom presentation themes.
 - [host-compatibility.md](references/host-compatibility.md): capability-based behavior across Codex, ChatGPT, Claude Code, and Claude Chat.
-- [licensing-and-attribution.md](references/licensing-and-attribution.md): content ownership, runtime notices, and intellbits brand boundaries.
+- [licensing-and-attribution.md](references/licensing-and-attribution.md): content ownership, runtime notices, and intell labs brand boundaries.
 - [motion-workflow.md](references/motion-workflow.md): restrained presentation motion.
 - [quality-gates.md](references/quality-gates.md): content, visual, technical, and text QA.
 - [visual-qa.md](references/visual-qa.md): rendered geometry, state completeness, brand density, and harmony review.

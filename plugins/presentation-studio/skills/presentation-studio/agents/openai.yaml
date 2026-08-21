@@ -1,0 +1,8 @@
+interface:
+  display_name: "Presentation Studio by intell labs"
+  short_description: "Crea presentaciones con estrategia y validación"
+  brand_color: "#314CFF"
+  default_prompt: "Use $presentation-studio to guide me one question at a time and create a polished self-contained HTML presentation."
+
+policy:
+  allow_implicit_invocation: true

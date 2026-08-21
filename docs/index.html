@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PPT Studio by intellbits — a presentation director for AI coding agents</title>
+<title>Presentation Studio by intell labs — a presentation director for AI coding agents</title>
 <meta name="description" content="Open-source presentation director for Claude Code, Claude Chat, ChatGPT, and Codex. Guided research, narrative, and production of self-contained 16:9 HTML decks.">
-<meta name="generator" content="PPT Studio by intellbits">
-<meta property="og:title" content="PPT Studio by intellbits">
+<meta name="generator" content="Presentation Studio by intell labs">
+<meta property="og:title" content="Presentation Studio by intell labs">
 <meta property="og:description" content="A guided presentation director for Claude Code, Claude Chat, ChatGPT, and Codex. One question at a time, from audience to final QA.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://intellbits.github.io/ppt-studio/">
+<meta property="og:url" content="https://intell-labs.github.io/presentation-studio/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23314CFF'/%3E%3Crect x='7' y='9' width='18' height='12' rx='2' fill='white'/%3E%3Crect x='14' y='22' width='4' height='3' rx='1' fill='white'/%3E%3C/svg%3E">
 <style>
   :root {
@@ -177,12 +177,12 @@
       <span class="mark" aria-hidden="true">
         <svg width="14" height="14" viewBox="0 0 32 32"><rect x="4" y="7" width="24" height="16" rx="2.5" fill="#fff"/><rect x="14" y="24" width="4" height="3" rx="1" fill="#fff"/></svg>
       </span>
-      PPT Studio
+      Presentation Studio
     </a>
     <nav>
       <a href="#how" class="hide-sm">How it works</a>
       <a href="#install">Install</a>
-      <a href="https://github.com/intellbits/ppt-studio">GitHub</a>
+      <a href="https://github.com/intell-labs/presentation-studio">GitHub</a>
     </nav>
   </div>
 </header>
@@ -193,13 +193,13 @@
     <span class="eyebrow">Open source · Apache-2.0 · v1.0.4</span>
     <h1>A presentation director for your AI agent.</h1>
     <p class="lede">
-      PPT Studio turns “make me a deck” into a real conversation. It asks <strong>one question at a time</strong> —
+      Presentation Studio turns “make me a deck” into a real conversation. It asks <strong>one question at a time</strong> —
       audience, brand, your speaking voice, the actual research — confirms the story before touching design,
       and ships a <strong>self-contained 16:9 HTML presentation</strong> you can open, edit, and present anywhere.
     </p>
     <div class="cta">
       <a class="btn btn-primary" href="#install">Install it</a>
-      <a class="btn btn-ghost" href="https://github.com/intellbits/ppt-studio">View source</a>
+      <a class="btn btn-ghost" href="https://github.com/intell-labs/presentation-studio">View source</a>
     </div>
     <p class="hosts">Works in Claude Code · Claude Chat · ChatGPT · Codex</p>
   </div>
@@ -236,47 +236,47 @@
 
   <section id="install" class="wrap">
     <h2>Install</h2>
-    <p class="sub">Pick your host. The package exposes a single canonical skill, <code>ppt-presentation-studio</code>, and needs no other presentation framework.</p>
+    <p class="sub">Pick your host. The package exposes a single canonical skill, <code>presentation-studio</code>, and needs no other presentation framework.</p>
 
     <div class="install">
 
       <div class="step">
         <div class="step-head"><h3>Claude Code</h3><span>marketplace</span></div>
         <div class="copy-wrap">
-<pre><code>claude plugin marketplace add intellbits/ppt-studio
-claude plugin install presentation-studio@ppt-studio-marketplace
-<span class="c"># Invoke: /presentation-studio:ppt-presentation-studio</span></code></pre>
+<pre><code>claude plugin marketplace add intell-labs/presentation-studio
+claude plugin install presentation-studio@presentation-studio-marketplace
+<span class="c"># Invoke: /presentation-studio:presentation-studio</span></code></pre>
         </div>
       </div>
 
       <div class="step">
         <div class="step-head"><h3>Codex</h3><span>marketplace</span></div>
-        <p>Register <code>intellbits/ppt-studio</code> as a marketplace, then install <code>presentation-studio</code> from <code>ppt-studio-marketplace</code>. Invoke it with <code>$ppt-presentation-studio</code> or let Codex select it automatically.</p>
+        <p>Register <code>intell-labs/presentation-studio</code> as a marketplace, then install <code>presentation-studio</code> from <code>presentation-studio-marketplace</code>. Invoke it with <code>$presentation-studio</code> or let Codex select it automatically.</p>
       </div>
 
       <div class="step">
         <div class="step-head"><h3>ChatGPT</h3><span>skill upload</span></div>
-        <p>Upload <code>ppt-presentation-studio-1.0.4-chatgpt.zip</code> from Skills → Create → Upload from your computer. Availability and upload permissions depend on the user’s plan and workspace settings.</p>
+        <p>Upload <code>presentation-studio-1.0.4-chatgpt.zip</code> from Skills → Create → Upload from your computer. Availability and upload permissions depend on the user’s plan and workspace settings.</p>
       </div>
 
       <div class="step">
         <div class="step-head"><h3>Claude Chat</h3><span>skill upload</span></div>
         <p>
-          Download <code>ppt-presentation-studio-1.0.4-claude.zip</code> from the
-          <a href="https://github.com/intellbits/ppt-studio/releases/latest">latest release</a>
-          and upload it under Customize → Skills. It appears as <strong>Presentation Studio by intell labs (part of intellbits.com)</strong>; the archive holds the skill folder at its root and pulls in nothing external.
+          Download <code>presentation-studio-1.0.4-claude.zip</code> from the
+          <a href="https://github.com/intell-labs/presentation-studio/releases/latest">latest release</a>
+          and upload it under Customize → Skills. It appears as <strong>Presentation Studio by intell labs</strong>; the archive holds the skill folder at its root and pulls in nothing external.
         </p>
       </div>
 
       <div class="step">
         <div class="step-head"><h3>From source</h3><span>local development</span></div>
         <div class="copy-wrap">
-<pre><code>git clone https://github.com/intellbits/ppt-studio.git
-cd ppt-studio
+<pre><code>git clone https://github.com/intell-labs/presentation-studio.git
+cd presentation-studio
 python3 scripts/validate_all.py   <span class="c"># cross-target checks</span>
 python3 scripts/build_release.py  <span class="c"># Codex + ChatGPT + Claude ZIPs in dist/</span></code></pre>
         </div>
-        <p>Then point the marketplace at the absolute repository path instead of <code>intellbits/ppt-studio</code>.</p>
+        <p>Then point the marketplace at the absolute repository path instead of <code>intell-labs/presentation-studio</code>.</p>
       </div>
 
     </div>
@@ -287,20 +287,20 @@ python3 scripts/build_release.py  <span class="c"># Codex + ChatGPT + Claude ZIP
     <ul class="plain">
       <li><strong>Code:</strong> Apache License 2.0. Keep the supplied <code>NOTICE</code> when you redistribute the source or a derivative.</li>
       <li><strong>Your presentations:</strong> yours. You keep the rights you hold in your own content and assets; third-party assets stay under their own terms.</li>
-      <li><strong>Trademarks:</strong> the Apache license grants no brand rights. See <a href="https://github.com/intellbits/ppt-studio/blob/main/TRADEMARKS.md">TRADEMARKS.md</a> — forks need a distinct name and must not imply endorsement.</li>
-      <li><strong>No bundled third-party code:</strong> other open-source presentation projects were reviewed as product references only, recorded in <a href="https://github.com/intellbits/ppt-studio/blob/main/release/vendor-lock.json">vendor-lock.json</a>.</li>
+      <li><strong>Trademarks:</strong> the Apache license grants no brand rights. See <a href="https://github.com/intell-labs/presentation-studio/blob/main/TRADEMARKS.md">TRADEMARKS.md</a> — forks need a distinct name and must not imply endorsement.</li>
+      <li><strong>No bundled third-party code:</strong> other open-source presentation projects were reviewed as product references only, recorded in <a href="https://github.com/intell-labs/presentation-studio/blob/main/release/vendor-lock.json">vendor-lock.json</a>.</li>
     </ul>
   </section>
 
 </main>
 
 <footer class="wrap">
-  <p>PPT Studio — Apache License 2.0. Copyright 2026 intellbits.</p>
+  <p>Presentation Studio — Apache License 2.0. Copyright 2026 intell labs.</p>
   <p>
-    <a href="https://intellbits.com">intellbits.com</a> ·
-    <a href="https://github.com/intellbits/ppt-studio">Repository</a> ·
-    <a href="https://github.com/intellbits/ppt-studio/releases">Releases</a> ·
-    <a href="https://github.com/intellbits/ppt-studio/issues">Issues</a>
+    <a href="https://github.com/intell-labs">intell labs</a> ·
+    <a href="https://github.com/intell-labs/presentation-studio">Repository</a> ·
+    <a href="https://github.com/intell-labs/presentation-studio/releases">Releases</a> ·
+    <a href="https://github.com/intell-labs/presentation-studio/issues">Issues</a>
   </p>
 </footer>
 

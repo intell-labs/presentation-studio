@@ -31,9 +31,9 @@ Rendered QA is capability-based:
 
 ## Distribution surfaces
 
-- ChatGPT and Codex load `ppt-presentation-studio` from the OpenAI plugin package.
+- ChatGPT and Codex load `presentation-studio` from the OpenAI plugin package.
 - Claude Code loads the same skill from the Claude plugin package.
-- Claude Chat receives a release ZIP whose root folder is `ppt-presentation-studio/`.
+- Claude Chat receives a release ZIP whose root folder is `presentation-studio/`.
 
 The skill folder must not reference files outside itself. All Python utilities use the standard library so the package works in restricted execution environments.
 

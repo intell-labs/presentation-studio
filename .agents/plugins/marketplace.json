@@ -1,7 +1,7 @@
 {
-  "name": "ppt-studio-marketplace",
+  "name": "presentation-studio-marketplace",
   "interface": {
-    "displayName": "Presentation Studio by intell labs (part of intellbits.com)"
+    "displayName": "Presentation Studio by intell labs"
   },
   "plugins": [
     {

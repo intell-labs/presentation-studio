@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static checks for PPT Studio HTML outputs."""
+"""Static checks for Presentation Studio HTML outputs."""
 
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ CORE_RUNTIME_IDS = (
     "help-dialog",
     "about-dialog",
     "presentation-project-data",
-    "ppt-studio-attribution",
+    "presentation-studio-attribution",
 )
 CORE_RUNTIME_MARKERS = (
     "const DESIGN_W=1920,DESIGN_H=1080",
@@ -136,16 +136,16 @@ class TextCoverageParser(HTMLParser):
 
 def runtime_contract_errors(source: str, deck: DeckParser) -> list[str]:
     errors: list[str] = []
-    if deck.meta.get("ppt-studio-runtime") != RUNTIME_VERSION:
-        errors.append(f"PPT Studio runtime metadata must be {RUNTIME_VERSION}.")
-    if f'data-ppt-studio-runtime="{RUNTIME_VERSION}"' not in source:
-        errors.append("PPT Studio runtime root marker is missing.")
+    if deck.meta.get("presentation-studio-runtime") != RUNTIME_VERSION:
+        errors.append(f"Presentation Studio runtime metadata must be {RUNTIME_VERSION}.")
+    if f'data-presentation-studio-runtime="{RUNTIME_VERSION}"' not in source:
+        errors.append("Presentation Studio runtime root marker is missing.")
     missing_ids = sorted(set(CORE_RUNTIME_IDS) - set(deck.ids))
     if missing_ids:
-        errors.append("PPT Studio runtime controls are missing: " + ", ".join(missing_ids))
+        errors.append("Presentation Studio runtime controls are missing: " + ", ".join(missing_ids))
     missing_markers = [marker for marker in CORE_RUNTIME_MARKERS if marker not in source]
     if missing_markers:
-        errors.append("PPT Studio runtime behavior is missing: " + ", ".join(missing_markers))
+        errors.append("Presentation Studio runtime behavior is missing: " + ", ".join(missing_markers))
     chrome_match = re.search(r'<nav\b[^>]*id=["\']deck-chrome["\'][^>]*>(.*?)</nav>', source, re.I | re.S)
     if not chrome_match:
         errors.append("Unified deck-chrome navigation was not found.")
@@ -234,14 +234,14 @@ def main() -> int:
             warnings.append(f"Theme token was not found: {token}.")
     if 'id="theme-dialog"' not in source:
         warnings.append("Custom theme dialog was not found.")
-    if deck.meta.get("generator") != "PPT Studio by intellbits":
-        warnings.append("PPT Studio generator attribution was not found.")
-    if deck.meta.get("generator-url") != "https://intellbits.com":
-        warnings.append("PPT Studio generator URL was not found.")
+    if deck.meta.get("generator") != "Presentation Studio by intell labs":
+        warnings.append("Presentation Studio generator attribution was not found.")
+    if deck.meta.get("generator-url") != "https://github.com/intell-labs/presentation-studio":
+        warnings.append("Presentation Studio generator URL was not found.")
     if 'id="about-dialog"' not in source:
-        warnings.append("PPT Studio About dialog was not found.")
-    if "Apache-2.0" not in source or "intellbits.com" not in source:
-        warnings.append("PPT Studio runtime attribution is incomplete.")
+        warnings.append("Presentation Studio About dialog was not found.")
+    if "Apache-2.0" not in source or "intell labs" not in source:
+        warnings.append("Presentation Studio runtime attribution is incomplete.")
     project_match = re.search(
         r'<script\b[^>]*id=["\']presentation-project-data["\'][^>]*>\s*(.*?)\s*</script>',
         source,

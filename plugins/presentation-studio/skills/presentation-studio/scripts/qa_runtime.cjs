@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* Rendered geometry, state, chrome, and brand QA for PPT Studio decks. */
+/* Rendered geometry, state, chrome, and brand QA for Presentation Studio decks. */
 
 const fs = require('fs');
 const path = require('path');
@@ -62,9 +62,9 @@ function makeGallery(report, outputDir) {
     </article>`).join('');
   return `<!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PPT Studio · Visual QA</title><style>
+<title>Presentation Studio · Visual QA</title><style>
 :root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#07111e;color:#eef3f8;font:14px/1.45 system-ui,sans-serif}header{position:sticky;top:0;z-index:2;padding:18px 24px;background:#07111ef2;border-bottom:1px solid #ffffff20;backdrop-filter:blur(18px)}h1{margin:0;font-size:22px}header p{margin:5px 0 0;color:#9eb0c2}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:18px;padding:22px}.card{overflow:hidden;border:1px solid #ffffff1c;border-radius:14px;background:#0d1c2c}.card img{display:block;width:100%;aspect-ratio:16/9;object-fit:contain;background:#02070c}.card div{display:flex;justify-content:space-between;gap:12px;padding:11px 13px}.card span{color:#8fa2b5}
-</style></head><body><header><h1>PPT Studio · Revisión visual completa</h1><p>${report.summary.checks} checks · ${report.summary.failures} fallos · ${report.summary.reviewItems} elementos para revisión</p></header><main class="grid">${cards}</main></body></html>`;
+</style></head><body><header><h1>Presentation Studio · Revisión visual completa</h1><p>${report.summary.checks} checks · ${report.summary.failures} fallos · ${report.summary.reviewItems} elementos para revisión</p></header><main class="grid">${cards}</main></body></html>`;
 }
 
 async function preparePage(page, url, viewport) {

@@ -65,7 +65,7 @@
 - Reduced motion is supported.
 - Reduced transparency and increased contrast preferences remain usable.
 - The document remains readable if animation fails.
-- `python3 scripts/validate_html.py presentation.html --strict` passes; a missing PPT Studio runtime contract blocks delivery.
+- `python3 scripts/validate_html.py presentation.html --strict` passes; a missing Presentation Studio runtime contract blocks delivery.
 
 ## Rendered viewport matrix
 
@@ -109,11 +109,11 @@ Use the current HTML after browser editing:
 
 ## Licensing and originality
 
-- Use the original PPT Studio runtime and references.
+- Use the original Presentation Studio runtime and references.
 - Do not bundle source, assets, templates, or instruction files from external presentation repositories.
 - Preserve the Apache-2.0 license, `NOTICE`, generator metadata, and discreet About panel in runtime or source distributions.
-- Confirm the generator is `PPT Studio by intellbits`, the generator URL is `https://intellbits.com`, and the About panel states that the runtime is Apache-2.0.
-- Do not place an intellbits watermark or permanent brand mark on slides unless the user explicitly requests it.
+- Confirm the generator is `Presentation Studio by intell labs`, the generator URL is `https://github.com/intell-labs/presentation-studio`, and the About panel states that the runtime is Apache-2.0.
+- Do not place an intell labs watermark or permanent brand mark on slides unless the user explicitly requests it.
 - Follow `TRADEMARKS.md` when naming or branding a fork or commercial wrapper.
 - Record approved third-party fonts, images, logos, and their usage constraints in the project contract.
 

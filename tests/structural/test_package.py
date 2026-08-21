@@ -10,13 +10,42 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 PLUGIN = ROOT / "plugins" / "presentation-studio"
-SKILL = PLUGIN / "skills" / "ppt-presentation-studio"
+SKILL = PLUGIN / "skills" / "presentation-studio"
 
 
 class PackageTests(unittest.TestCase):
     def test_dual_manifests_exist(self) -> None:
         self.assertTrue((PLUGIN / ".codex-plugin" / "plugin.json").is_file())
         self.assertTrue((PLUGIN / ".claude-plugin" / "plugin.json").is_file())
+
+    def test_public_identity_is_consistently_intell_labs(self) -> None:
+        openai_marketplace = json.loads((ROOT / ".agents" / "plugins" / "marketplace.json").read_text(encoding="utf-8"))
+        claude_marketplace = json.loads((ROOT / ".claude-plugin" / "marketplace.json").read_text(encoding="utf-8"))
+        self.assertEqual(openai_marketplace["name"], "presentation-studio-marketplace")
+        self.assertEqual(claude_marketplace["name"], "presentation-studio-marketplace")
+        self.assertEqual(
+            claude_marketplace["plugins"][0]["homepage"],
+            "https://github.com/intell-labs/presentation-studio",
+        )
+        for path in (
+            ROOT / "README.md",
+            ROOT / "docs" / "index.html",
+            ROOT / ".agents" / "plugins" / "marketplace.json",
+            ROOT / ".claude-plugin" / "marketplace.json",
+            PLUGIN / ".codex-plugin" / "plugin.json",
+            PLUGIN / ".claude-plugin" / "plugin.json",
+            SKILL / "SKILL.md",
+            SKILL / "assets" / "runtime" / "base-deck.html",
+        ):
+            source = path.read_text(encoding="utf-8").lower()
+            for legacy in (
+                "github.com/" + "intell" + "bits",
+                "intell" + "bits/" + "ppt" + "-studio",
+                "ppt" + "-studio-marketplace",
+                "ppt" + "-presentation-studio",
+                "ppt" + " studio",
+            ):
+                self.assertNotIn(legacy, source, path.relative_to(ROOT).as_posix())
 
     def test_versions_use_plain_semver(self) -> None:
         release = json.loads((ROOT / "release" / "manifest.json").read_text(encoding="utf-8"))["version"]
@@ -35,10 +64,10 @@ class PackageTests(unittest.TestCase):
         for token in ("--brand-primary", "--brand-secondary", "--brand-dark", "--brand-light"):
             self.assertIn(token, source)
         self.assertIn('id="theme-dialog"', source)
-        self.assertIn('<meta name="generator" content="PPT Studio by intellbits">', source)
-        self.assertIn('<meta name="generator-url" content="https://intellbits.com">', source)
-        self.assertIn('<meta name="ppt-studio-runtime" content="base-deck-v2">', source)
-        self.assertIn('data-ppt-studio-runtime="base-deck-v2"', source)
+        self.assertIn('<meta name="generator" content="Presentation Studio by intell labs">', source)
+        self.assertIn('<meta name="generator-url" content="https://github.com/intell-labs/presentation-studio">', source)
+        self.assertIn('<meta name="presentation-studio-runtime" content="base-deck-v2">', source)
+        self.assertIn('data-presentation-studio-runtime="base-deck-v2"', source)
         self.assertIn('data-view-mode="audience"', source)
         self.assertIn('id="deck-chrome"', source)
         self.assertIn("stampEditBaselines", source)
@@ -143,7 +172,7 @@ class PackageTests(unittest.TestCase):
         source = (SKILL / "assets" / "runtime" / "base-deck.html").read_text(encoding="utf-8")
         self.assertEqual(module.count_slides(source), 2)
         isolated = module.isolated_slide(source, 2)
-        self.assertIn("ppt-studio-preview-isolation", isolated)
+        self.assertIn("presentation-studio-preview-isolation", isolated)
         self.assertIn(".deck-chrome,.deck-controls", isolated)
         self.assertIn(".deck-stage>.slide:nth-of-type(2)", isolated)
         self.assertIn('[data-present-step="required"]', isolated)
@@ -155,11 +184,11 @@ class PackageTests(unittest.TestCase):
             self.assertTrue((root / "NOTICE").is_file())
             self.assertTrue((root / "TRADEMARKS.md").is_file())
             notice = (root / "NOTICE").read_text(encoding="utf-8")
-            self.assertIn("Copyright 2026 intellbits", notice)
-            self.assertIn("https://intellbits.com", notice)
+            self.assertIn("Copyright 2026 intell labs", notice)
+            self.assertIn("https://github.com/intell-labs/presentation-studio", notice)
         codex = json.loads((PLUGIN / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8"))
         claude = json.loads((PLUGIN / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8"))
-        expected_author = "intell labs (part of intellbits.com)"
+        expected_author = "intell labs"
         self.assertEqual(codex["author"]["name"], expected_author)
         self.assertEqual(codex["interface"]["developerName"], expected_author)
         self.assertEqual(claude["author"]["name"], expected_author)
@@ -252,16 +281,16 @@ class PackageTests(unittest.TestCase):
     def test_chat_skill_zip_shapes_when_built(self) -> None:
         manifest = json.loads((ROOT / "release" / "manifest.json").read_text(encoding="utf-8"))
         archives = [
-            ROOT / "dist" / f"ppt-presentation-studio-{manifest['version']}-chatgpt.zip",
-            ROOT / "dist" / f"ppt-presentation-studio-{manifest['version']}-claude.zip",
+            ROOT / "dist" / f"presentation-studio-{manifest['version']}-chatgpt.zip",
+            ROOT / "dist" / f"presentation-studio-{manifest['version']}-claude.zip",
         ]
         if not all(archive.exists() for archive in archives):
             self.skipTest("Chat skill release archives have not been built yet.")
         for archive in archives:
             with zipfile.ZipFile(archive) as bundle:
                 names = bundle.namelist()
-            self.assertIn("ppt-presentation-studio/SKILL.md", names)
-            self.assertFalse(any(name.startswith("presentation-studio/") for name in names))
+            self.assertIn("presentation-studio/SKILL.md", names)
+            self.assertTrue(all(name.startswith("presentation-studio/") for name in names))
 
 
 if __name__ == "__main__":

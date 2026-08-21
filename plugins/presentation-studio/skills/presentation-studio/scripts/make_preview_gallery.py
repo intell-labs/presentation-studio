@@ -11,7 +11,7 @@ from pathlib import Path
 
 
 PREVIEW_STYLE = """
-<style id="ppt-studio-preview-isolation">
+<style id="presentation-studio-preview-isolation">
 html,body{overflow:hidden!important}
 .deck-chrome,.deck-controls,.deck-nav,.menu-trigger,.control-menu,.save-status,
 .notes-drawer,dialog,.progress,.edit-hotzone,.edit-toggle,.edit-toast,.access-gate{
@@ -21,7 +21,7 @@ html,body{overflow:hidden!important}
 .deck-stage>.slide:nth-of-type(__SLIDE__){visibility:visible!important;opacity:1!important;pointer-events:none!important}
 html body .deck-stage>.slide:nth-of-type(__SLIDE__) [data-present-step="required"]{opacity:1!important;transform:none!important;visibility:visible!important;filter:none!important}
 </style>
-<script id="ppt-studio-preview-history-isolation">
+<script id="presentation-studio-preview-history-isolation">
 globalThis.__PPT_STUDIO_PREVIEW__=true;
 try{history.pushState=history.replaceState=()=>{}}catch(_error){}
 addEventListener('load',()=>{
@@ -40,8 +40,8 @@ TEMPLATE = """<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="dark">
-<meta name="generator" content="PPT Studio preview gallery">
-<title>Direcciones visuales · PPT Studio</title>
+<meta name="generator" content="Presentation Studio preview gallery">
+<title>Direcciones visuales · Presentation Studio</title>
 <style>
 :root{color-scheme:dark;font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif;background:#070b12;color:#f7f8fb}
 *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(900px 520px at 50% -180px,#263355 0,#0c111d 54%,#070b12 100%)}
@@ -63,7 +63,7 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
 </head>
 <body>
 <div class="shell">
-  <header><div><p class="eyebrow">PPT Studio · exploración visual</p><h1>Direcciones visuales</h1><p class="hint">Compara la tesis completa de cada opción. Usa A, B, C o las flechas.</p></div><div class="tabs" id="tabs" role="tablist" aria-label="Direcciones visuales"></div></header>
+  <header><div><p class="eyebrow">Presentation Studio · exploración visual</p><h1>Direcciones visuales</h1><p class="hint">Compara la tesis completa de cada opción. Usa A, B, C o las flechas.</p></div><div class="tabs" id="tabs" role="tablist" aria-label="Direcciones visuales"></div></header>
   <main id="option-panels" aria-live="polite"></main>
 </div>
 <script>

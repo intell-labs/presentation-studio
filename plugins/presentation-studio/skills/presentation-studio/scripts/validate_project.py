@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate PPT Studio phase gates without external Python packages."""
+"""Validate Presentation Studio phase gates without external Python packages."""
 
 from __future__ import annotations
 

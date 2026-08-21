@@ -3,9 +3,9 @@
   "version": "1.0.4",
   "description": "Guided, research-aware creation of polished self-contained HTML presentations.",
   "author": {
-    "name": "intell labs (part of intellbits.com)"
+    "name": "intell labs"
   },
-  "homepage": "https://intellbits.com",
+  "homepage": "https://github.com/intell-labs/presentation-studio",
   "license": "Apache-2.0",
   "keywords": [
     "presentations",
