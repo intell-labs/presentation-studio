@@ -60,7 +60,7 @@
 - The full per-element typography editor opens from the Author menu and exposes approved family, bounded size, weight, leading, tracking, color, alignment, italic, and reset controls.
 - Author mode, editing, save status, safe file binding, and keyboard shortcuts work.
 - Regeneration through `preserve_edits.py` retains browser-changed copy, per-text styles, and safe visual styles, accepts untouched generator updates, and creates a backup before overwrite.
-- Light, dark, and custom themes preserve exact approved brand colors, contrast, charts, logos, and layout; light/dark anchor slides use opposite polarity.
+- Only contract-enabled themes are selectable; they preserve exact approved brand colors, contrast, charts, logos, and layout; light/dark anchor slides use opposite polarity.
 - Mobile portrait and landscape show arrows only and do not obscure content.
 - Reduced motion is supported.
 - Reduced transparency and increased contrast preferences remain usable.
@@ -118,6 +118,8 @@ Use the current HTML after browser editing:
 - Record approved third-party fonts, images, logos, and their usage constraints in the project contract.
 
 ## Delivery report
+
+Report automated structure/runtime, geometry, resource integrity and decision fidelity separately from screenshot-based visual judgment. Bind evidence to the exact final HTML hash; stale captures or missing required assets block delivery even without overflow. See `enhancement-contract.md`.
 
 Report:
 

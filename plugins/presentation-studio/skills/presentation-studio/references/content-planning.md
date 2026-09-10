@@ -13,6 +13,8 @@ For each slide record:
 ```json
 {
   "id": "hoja-01",
+  "role": "cover",
+  "tone": "anchor",
   "section": "",
   "purpose": "",
   "takeaway": "",
@@ -38,6 +40,7 @@ For each slide record:
 | Risks | Matrix or ranked ledger |
 | Ecosystem or ownership | Relationship map |
 | Several related metrics | Editorial table or dashboard |
+| Service catalog | Local icon–title–description groups; columns if they aid scanning |
 | Story, testimony, or identity | Image, quote, and context |
 | Dense supporting detail | On-demand state, notes, or appendix |
 

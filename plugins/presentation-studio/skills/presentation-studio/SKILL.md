@@ -20,10 +20,11 @@ Create presentations through deliberate checkpoints. Prefer a portable, fixed-st
 6. Do not generate illustrations unless the user explicitly requests them.
 7. Avoid generic AI language. Match the speaker's real vocabulary, regional register, directness, and sentence rhythm.
 8. Do not execute a large batch without validation. Use a two- or three-slide microdeck first.
-9. Include only runtime features the user needs. Default to audience-view delivery with an always-discoverable Author section in the unified menu, author text editing, a contextual per-element toolbar for text and safe visual styles, a full typography editor constrained to approved families and semantic size/leading bounds, keyboard navigation, deep links, unsaved-change status, light/dark/custom themes, edit preservation, and reduced-motion support. These are supplied by the protected Presentation Studio runtime, not reimplemented per deck.
+9. Include only runtime features the user needs. Default to audience-view delivery with an always-discoverable Author section in the unified menu, author text editing, a contextual per-element toolbar for text and safe visual styles, a full typography editor constrained to approved families and semantic size/leading bounds, keyboard navigation, deep links, unsaved-change status, contract-enabled themes, edit preservation, and reduced-motion support. These are supplied by the protected Presentation Studio runtime, not reimplemented per deck.
 10. Audit the final rendered HTML text after browser edits; do not trust only the earlier content plan.
 11. Treat the first generated deck as a professional first draft, not a generic layout sample. Use the approved voice, evidence, visual forms, brand hierarchy, anchor slides, and audience decision to make each page specific.
 12. A static pass or a few representative screenshots never prove visual quality. Every slide, every required state including state zero, every theme, and every required viewport must pass rendered geometry QA and an explicit harmony review before delivery.
+13. Text contrast is a delivery blocker, not a stylistic preference. Choose foreground against the actual local surface, including inverse anchors and nested cards, never from the global theme name alone. Check primary, muted and accented text, captions, charts and interactive states. Follow the contrast gate in [theme-system.md](references/theme-system.md); brand color fidelity cannot excuse unreadable text.
 
 ## Phase 0: Detect mode and initialize
 
@@ -32,6 +33,8 @@ Detect one mode:
 - `new`: create a presentation from sources, notes, or a topic.
 - `enhance`: preserve and improve an existing HTML deck.
 - `convert`: convert PPTX, documents, spreadsheets, or reports into a web deck.
+
+For `enhance`, first read [enhancement-contract.md](references/enhancement-contract.md). Establish the canonical saved baseline, inventory existing assets before reduction, preserve approved choices and limit changes to the requested scope. Do not restart discovery or regenerate unrelated slides. This reference also governs new decks derived from an approved visual reference.
 
 If no project contract exists, run:
 
@@ -45,7 +48,7 @@ Read [conversation-flow.md](references/conversation-flow.md). Announce the four 
 
 Collect presentation type, audience, prior knowledge, expected decision, desired post-presentation discussion, objections, presentation time, and reading-versus-speaking use.
 
-Do not accept vague audience labels without helping the user clarify decision power, interests, concerns, and context. Record answers in `project`, `audience`, and `objective`.
+Do not accept vague audience labels without helping the user clarify decision power, interests, concerns, and context. Record answers in `project`, `audience`, and `objective`; approve use-specific density and supporting-text bounds in `design_contract.readability`.
 
 ## Phase 2: Resources and brand
 
@@ -63,7 +66,10 @@ Recommend the primary expert role, complementary roles, and the audience-side ev
 
 ## Phase 4: Structure and content co-creation
 
+Read [enhancement-contract.md](references/enhancement-contract.md) for all build modes. Record slide roles/tones, full visual-system decisions and confirmed case identity alongside content; the build and delivery gates validate these against the output.
+
 Read [content-planning.md](references/content-planning.md).
+Read [content-clarity.md](references/content-clarity.md) before shortening an executive variant, building diagrams, or presenting linked figures/calculators. Preserve the audience's decision context; optional detail must not hide indispensable qualifications.
 
 Ask whether the user already has a structure. If yes, extract and critique it. If not, propose a narrative and explain what information each section requires. Choose the clearest representation for each information shape.
 
@@ -103,17 +109,18 @@ Before full production, infer whether hosting or a native presentation format wo
 
 Self-contained HTML remains the canonical Presentation Studio output and the only design/runtime owner. Optional routes are additive workers: they consume the approved contract and validated HTML, but may not redesign the deck, replace its runtime, weaken its QA, or block HTML delivery if they fail. Publishing, connecting a provider, installing a tool, or creating an external artifact always requires explicit approval.
 
-Confirm only relevant optional features. Begin every full deck by copying `assets/runtime/base-deck.html` into the output file. Generate on its fixed 1920 x 1080 stage scaled uniformly to the viewport. Do not reflow slide content on phones. Embed required images, icons, CSS, JS, and licensed fonts in the final file whenever feasible. Do not import external presentation frameworks or require other skills.
+Confirm only relevant optional features. For new/converted decks, begin from `assets/runtime/base-deck.html`. For enhancements, patch the canonical saved source and update runtime only where necessary; do not replace approved content. Use the fixed 1920 x 1080 stage scaled uniformly to the viewport. Do not reflow slide content on phones. Embed required images, icons, CSS, JS, and licensed fonts in the final file whenever feasible. Do not import external presentation frameworks or require other skills.
 
 Treat the copied runtime as protected infrastructure. Replace its sample slides and extend its design tokens and layout CSS, but preserve the runtime metadata, `data-presentation-studio-runtime="base-deck-v2"`, stage scaling, `prev · counter · next · menu` control order, audience/author separation, save workflow, theme dialog, Help and About dialogs, attribution block, edit baselines, and navigation script. Do not create a separate menu, navigation, save, theme, or keyboard runtime that merely resembles these features. Add approved optional modules as extensions to this runtime.
 
 Keep a deterministic generator, normally `.work/build_presentation.py`, for structural changes. Never overwrite a saved browser-edited deck directly. Generate a fresh candidate, then preserve changed editable fields and create a backup with:
 
 ```bash
-python3 scripts/preserve_edits.py presentation.html .work/presentation-generated.html --output presentation.html
+python3 scripts/preserve_edits.py presentation.html .work/presentation-generated.html --base .work/common-base.html --output presentation.html
 ```
 
 Use stable `data-edit-id` values across regeneration. If a browser-edited ID is intentionally removed, stop and reconcile it explicitly rather than dropping the edit silently.
+Declare update, independent variant, or merge before writing. Save the real common baseline before edits; never fabricate it afterward. The reconciler blocks ambiguous/conflicting changes and writes a decision report. Use `--scope text` to import copy without reverting the candidate's newer CSS/runtime, and `--mode variant` with a new path to keep the original intact. See the enhancement contract for missing-base handling.
 
 After producing or materially revising a full deck, run the strict runtime check and fix every error before presenting it for review:
 
@@ -134,8 +141,11 @@ Annotate layout semantics for rendered QA:
 - `data-qa-text-stack="balanced"` on vertical text groups whose inter-element rhythm must be checked;
 - `data-brand-mark` on visible logos or wordmarks;
 - `data-brand-mention` on intentional textual brand mentions.
+- `data-qa-shape="ellipse"` on circles/ellipses containing text;
+- `data-critical="true"` on indispensable qualifications and `data-audience="internal"` on presenter-only guidance (outside audience content).
 
 Overlap is forbidden by default. Use `data-qa-overlap="allow"` only for deliberate containment or layering and explain the exception in the project contract. Flex and grid children must use `min-width:0` and `min-height:0` where content could otherwise force overflow.
+Use shared header/content/footer regions, explicit minimum clearances and role-specific density where appropriate. Fit the real title and conclusion before allocating the body; non-overlap alone does not prove adequate spacing. Calculated outputs use numeric-model bindings rather than editable duplicate numbers.
 
 ## Phase 8: Motion workflow
 
@@ -163,7 +173,7 @@ Before delivery:
 5. Re-render after text corrections and check overflow again.
 6. Run `scripts/qa_runtime.cjs` against the final file. It must enumerate every slide and every required state, including state zero, rather than sampling representative pages.
 7. Require text-to-text, surface-to-text, multiline line-height, annotated text-stack spacing, connector proportion, and connector endpoint geometry checks to pass.
-8. Inspect the generated screenshot gallery for balance, closure, intentional whitespace, connector integrity, footer/chrome clearance, and brand restraint. Record the completed harmony review in `visual_qa.harmony_review`.
+8. Inspect the generated screenshot gallery for balance, closure, intentional whitespace, connector integrity, footer/chrome clearance, and brand restraint. Record observations per slide in a separate `visual-review.json` bound to the HTML and QA report hashes; mirror its status in `visual_qa.harmony_review`. Automated success never counts as visual approval.
 9. Render desktop, laptop, phone portrait, and phone landscape viewports in audience mode; also inspect author mode, every theme, every dialog, and optional module.
 10. Validate the project contract and HTML in strict mode; geometry failures, incomplete harmony review, or a runtime-contract error block delivery.
 11. Execute only the approved optional delivery routes. Validate each derivative independently, report fidelity or security limitations, and preserve the validated HTML even when a derivative cannot be completed.
@@ -171,9 +181,10 @@ Before delivery:
 Use:
 
 ```bash
-python3 scripts/validate_project.py presentation-project.json --phase delivery
 python3 scripts/validate_html.py presentation.html --strict
 node scripts/qa_runtime.cjs presentation.html --project presentation-project.json
+# Inspect screenshots and write visual-review.json before the delivery gate:
+python3 scripts/validate_project.py presentation-project.json --phase delivery --html presentation.html --qa-report .visual-qa/report.json --visual-review visual-review.json
 ```
 
 Do not open a browser automatically. Start a local server only when needed and give the user its URL.
@@ -222,10 +233,12 @@ Presentation Studio is an original, self-contained Apache-2.0 implementation dev
 - [voice-and-story.md](references/voice-and-story.md): human voice and title calibration.
 - [expert-research.md](references/expert-research.md): expert selection and research.
 - [content-planning.md](references/content-planning.md): narrative and slide contracts.
+- [content-clarity.md](references/content-clarity.md): executive hierarchy, semantic numbers, meaningful diagrams and summary-first modals.
 - [visual-exploration.md](references/visual-exploration.md): microdeck comparison.
 - [runtime-features.md](references/runtime-features.md): editing, saving, controls, and state navigation.
 - [delivery-routing.md](references/delivery-routing.md): inference, user confirmation, optional hosting, native formats, and host equivalents.
-- [theme-system.md](references/theme-system.md): light, dark, and brand-custom presentation themes.
+- [theme-system.md](references/theme-system.md): enabled themes and independent brand palette.
+- [enhancement-contract.md](references/enhancement-contract.md): baseline assets, composition, slide roles, readability, cases, decision fidelity and hash-bound evidence.
 - [host-compatibility.md](references/host-compatibility.md): capability-based behavior across Codex, ChatGPT, Claude Code, and Claude Chat.
 - [licensing-and-attribution.md](references/licensing-and-attribution.md): content ownership, runtime notices, and intell labs brand boundaries.
 - [motion-workflow.md](references/motion-workflow.md): restrained presentation motion.

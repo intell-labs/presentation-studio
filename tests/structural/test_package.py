@@ -81,7 +81,7 @@ class PackageTests(unittest.TestCase):
         self.assertIn('id="about-dialog"', source)
         self.assertIn("Apache-2.0", source)
         self.assertIn("presentation-project-data", source)
-        self.assertIn('"schema_version":"1.4"', source)
+        self.assertIn('"schema_version":"1.5"', source)
         self.assertIn("--content-safe-bottom", source)
         self.assertIn("--content-safe-right", source)
         self.assertIn("data-qa-box", source)
@@ -235,7 +235,7 @@ class PackageTests(unittest.TestCase):
 
     def test_project_schema_requires_visual_and_brand_policy(self) -> None:
         schema = json.loads((SKILL / "references" / "project.schema.json").read_text(encoding="utf-8"))
-        self.assertEqual(schema["properties"]["schema_version"]["const"], "1.4")
+        self.assertEqual(schema["properties"]["schema_version"]["const"], "1.5")
         brand_required = schema["properties"]["brand"]["required"]
         self.assertIn("usage_policy", brand_required)
         visual_required = schema["properties"]["visual_qa"]["required"]

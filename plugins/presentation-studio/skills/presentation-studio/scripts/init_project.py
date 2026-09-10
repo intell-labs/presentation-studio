@@ -11,7 +11,7 @@ from pathlib import Path
 
 def build_contract() -> dict:
     return {
-        "schema_version": "1.4",
+        "schema_version": "1.5",
         "workflow": {
             "mode": "new",
             "current_phase": "purpose-audience",
@@ -38,6 +38,17 @@ def build_contract() -> dict:
             "one_day_takeaway": "",
         },
         "resources": [],
+        "design_contract": {
+            "baseline_sha256": "",
+            "baseline_asset_hashes": [],
+            "assets": [],
+            "visual_system": {key: {"decision": "pending", "reason": "", "source": ""}
+                              for key in ("backgrounds", "gradients", "icons", "surfaces", "image_treatment")},
+            "composition": {"reference": "", "adopted": [], "rejected": [], "checks": []},
+            "readability": {"mode": "unknown", "max_words_per_slide": None,
+                            "supporting_text_min_px": None, "exceptions": []},
+            "cases": [],
+        },
         "brand": {
             "confirmed": {},
             "inferred": {},
@@ -141,9 +152,6 @@ def build_contract() -> dict:
             "visual_style_editor": True,
             "gallery_visual_qa": True,
             "appearance_menu": True,
-            "light_theme": True,
-            "dark_theme": True,
-            "custom_theme": True,
             "presenter_notes": False,
             "presenter_view": False,
             "timer": False,

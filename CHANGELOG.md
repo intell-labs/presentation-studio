@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+- Made text/surface contrast an explicit delivery blocker; corrected inverse-slide accent inheritance and added nested text/SVG/alpha regressions with per-slide contrast review evidence.
+
+- Added conflict-aware three-way reconciliation, explicit independent variants, content-only merges, recoverable backups and per-change reports.
+- Added an optional unit-aware numerical model for linked assumptions/outputs, invalid-input guards, annualization context and save/reopen persistence.
+- Added summary-first content dialogs with keyboard isolation, focus restoration, responsive containment and rendered dialog-state QA.
+- Added effective solid-background contrast, ellipse text containment, minimum clearance, shared-region checks and explicit unmeasured coverage.
+- Added role-based density, audience-first editorial guidance and numeric/editorial observations to hash-bound delivery evidence.
+
+- Added schema 1.5 design decisions: baseline asset inventories, preservation decisions, explicit slide roles/tones, composition checks, use-specific readability and confirmed case identity.
+- Enabled themes now drive menu order, keyboard cycling, persistence, export and QA from one contract list; palette editing cannot enable a disabled mode.
+- Added resource/decision regression gates and separate automated versus visual approval. Delivery requires matching HTML, contract, report and screenshot fingerprints plus per-slide review observations.
+- Replaced guessed menu animation sleeps with observable readiness.
+
+- Exit edit mode on Escape or a click outside editable components, preserving unsaved changes and keeping editing controls usable.
+
 - Consolidated the product, marketplace, canonical skill, documentation, runtime metadata, and release packages under the Presentation Studio and intell labs identities.
 - Moved all repository and installation references to `intell-labs/presentation-studio` and renamed the marketplace to `presentation-studio-marketplace`.
 - Renamed the canonical skill to `presentation-studio` and removed obsolete public brand references.

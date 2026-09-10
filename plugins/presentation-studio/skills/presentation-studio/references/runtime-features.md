@@ -12,7 +12,7 @@ Include by default:
 - one bottom-right `previous · counter · next · menu` control cluster;
 - unsaved-change indicator;
 - save and save-as workflow;
-- light, dark, and brand-custom themes;
+- only the light, dark and/or brand-custom themes enabled in the contract;
 - audience view by default, an always-visible Author menu section, and an explicit author state;
 - edit preservation across regeneration;
 - arrows-only mobile controls;
@@ -61,6 +61,8 @@ When edit mode begins:
 - display `Cambios sin guardar`;
 - prefix the browser title with a dot when dirty;
 - warn before unload.
+
+Pressing `Escape` or clicking outside editable text and safe visual targets exits edit mode completely, including when no element has been selected yet. Remove `contenteditable`, clear selection highlights and typography pick mode, close the typography dialog and contextual toolbar, and release editor focus. Preserve edited content, styles, and the unsaved-change state. Clicking another editable component or using the toolbar, dialogs, or presentation controls keeps the editor usable without an accidental exit.
 
 ### Contextual per-element editing
 
@@ -135,4 +137,4 @@ Do not reflow slide content. Scale the fixed stage uniformly and reserve a compa
 
 ## Themes
 
-Read `theme-system.md`. Every generated deck includes light, dark, and custom theme support unless the user explicitly requests a single locked theme. Never implement dark mode with CSS inversion.
+Read `theme-system.md`. `appearance.available_themes` is the sole enabled list; do not add a custom mode just because a brand palette exists. Never implement dark mode with CSS inversion.

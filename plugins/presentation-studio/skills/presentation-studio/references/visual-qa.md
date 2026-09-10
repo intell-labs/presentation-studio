@@ -1,6 +1,6 @@
 # Rendered visual QA
 
-Visual QA has two independent layers. Both are required.
+Automated measurement and visual judgment are independent. Report structure/runtime, geometry, resource integrity, decision fidelity, editorial/numeric checks, and visual judgment separately. Measured checks do not validate business facts or subjective hierarchy. Preservation has its own reconciliation report. See `enhancement-contract.md` for the asset/role contract and external evidence format.
 
 ## Layer 1: deterministic geometry
 
@@ -11,6 +11,7 @@ node scripts/qa_runtime.cjs presentation.html --project presentation-project.jso
 ```
 
 The script must render every slide at state zero and after each required reveal. It checks all configured viewports in audience mode, every slide in author mode, and every theme on desktop.
+It also exercises annotated content dialogs, their summary/editor states, keyboard isolation and focus return. `renderedStates` counts rendered states, not independent quality criteria. Review coverage and `summary.unmeasured`; missing annotations and complex paint are not automatically passed. Record limitations plus editorial/numeric observations in the external review, and inspect custom charts/modules separately.
 
 Blocking failures include:
 
@@ -78,6 +79,8 @@ Record:
   }
 }
 ```
+
+The metadata above is a summary, not evidence. Write a separate `visual-review.json` with the exact HTML/report hashes and per-slide observations. The delivery validator checks actual report/capture files and coverage. Any HTML change invalidates prior evidence; do not embed self-hashes or certify a `--no-screenshots` diagnostic run.
 
 `needs-review` is not a delivery pass. Resolve or explicitly document every uncertain composition.
 

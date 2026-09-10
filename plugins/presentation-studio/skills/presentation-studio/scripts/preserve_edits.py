@@ -12,6 +12,8 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import html.parser
+import hashlib
+import json
 import os
 import pathlib
 import re
@@ -281,6 +283,87 @@ def backup_file(path: pathlib.Path, backup_dir: pathlib.Path | None) -> pathlib.
     return candidate
 
 
+def reconcile(user_source: str, candidate_source: str, base_source: str | None = None,
+              scope: str = "all") -> tuple[str | None, dict]:
+    """Three-way decisions; text-only integration never copies old CSS or runtime.
+
+    Without a base, browser hashes can establish unchanged fields. Unknown or
+    competing edits block the write, including deletion-versus-modification.
+    """
+    user, candidate = parse_document(user_source), parse_document(candidate_source)
+    base = parse_document(base_source) if base_source is not None else None
+    report = {"base": "file" if base is not None else "browser-hashes-if-available", "scope": scope,
+              "preserved": [], "modified": [], "removed": [], "added": [], "conflicts": []}
+    replacements, tags = [], {}
+    missing = object()
+
+    def choose(identifier, old, proposed, common, baseline):
+        if old == proposed:
+            report["removed" if old is missing else "preserved"].append(identifier)
+            return proposed
+        if base is not None and old is missing and common is missing:
+            report["added"].append(identifier)
+            return proposed
+        if base is not None:
+            user_changed, agent_changed = old != common, proposed != common
+        elif baseline:
+            user_changed = old is missing or js_fnv1a(old or "") != baseline.lower()
+            agent_changed = proposed is missing or js_fnv1a(proposed or "") != baseline.lower()
+        elif old is missing:
+            report["added"].append(identifier)
+            return proposed
+        else:
+            report["conflicts"].append({"id": identifier, "reason": "no-common-base"})
+            return missing
+        if user_changed and agent_changed:
+            report["conflicts"].append({"id": identifier, "reason": "both-changed"})
+            return missing
+        selected = old if user_changed else proposed
+        # Structural deletions/additions must be reconciled in the candidate layout.
+        if selected is missing and proposed is not missing or selected is not missing and proposed is missing:
+            report["conflicts"].append({"id": identifier, "reason": "structure-reconciliation-required"})
+            return missing
+        report["removed" if selected is missing else "preserved" if user_changed else "modified"].append(identifier)
+        return selected
+
+    for identifier in sorted(set(user.editables) | set(candidate.editables) | (set(base.editables) if base else set())):
+        u, c, b = user.editables.get(identifier), candidate.editables.get(identifier), base.editables.get(identifier) if base else None
+        selected = choose(identifier, u.content(user_source) if u else missing,
+                          c.content(candidate_source) if c else missing,
+                          b.content(base_source) if b else missing, u.baseline if u else None)
+        if c and selected is not missing:
+            replacements.append((c.content_start, c.content_end, selected))
+            tag = with_baseline(candidate_source[c.start_start:c.start_end], js_fnv1a(c.content(candidate_source)))
+            tags[(c.start_start, c.start_end)] = tag
+
+    if scope == "all":
+        for kind, attr in (("text-style", "editables"), ("visual-style", "styleables")):
+            users, candidates = getattr(user, attr), getattr(candidate, attr)
+            bases = getattr(base, attr) if base else {}
+            for identifier in sorted(set(users) | set(candidates) | set(bases)):
+                u, c, b = users.get(identifier), candidates.get(identifier), bases.get(identifier)
+                baseline = (u.style_baseline if kind == "text-style" else u.baseline) if u else None
+                # No inline styles on either side need no inferred common base.
+                if not (u and u.style or c and c.style or b and b.style):
+                    continue
+                selected = choose(kind+":"+identifier, u.style if u else missing, c.style if c else missing,
+                                  b.style if b else missing, baseline)
+                if c and selected is not missing:
+                    key = (c.start_start, c.start_end)
+                    tag = tags.get(key, candidate_source[key[0]:key[1]])
+                    tag = with_attribute(tag, "style", selected)
+                    baseline_attr = "data-edit-style-baseline" if kind == "text-style" else "data-style-baseline"
+                    tags[key] = with_attribute(tag, baseline_attr, js_fnv1a(c.style or ""))
+    if report["conflicts"]:
+        return None, report
+    replacements.extend((start, end, tag) for (start, end), tag in tags.items())
+    result = candidate_source
+    for start, end, value in sorted(replacements, reverse=True):
+        result = result[:start] + value + result[end:]
+    report["output_sha256"] = hashlib.sha256(result.encode()).hexdigest()
+    return result, report
+
+
 def write_atomic(path: pathlib.Path, content: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary_name = None
@@ -307,12 +390,34 @@ def main() -> int:
     parser.add_argument("--output", required=True, type=pathlib.Path, help="Merged output HTML")
     parser.add_argument("--backup-dir", type=pathlib.Path, help="Optional backup directory")
     parser.add_argument("--no-backup", action="store_true", help="Do not back up an existing output")
+    parser.add_argument("--base", type=pathlib.Path, help="Last common source before user and agent changes")
+    parser.add_argument("--scope", choices=("all", "text"), default="all", help="Text integration keeps all candidate CSS/runtime intact")
+    parser.add_argument("--mode", choices=("update", "variant", "merge"), default="update")
+    parser.add_argument("--report", type=pathlib.Path, help="JSON decisions/conflicts; defaults beside output")
     args = parser.parse_args()
 
     try:
         existing_source = args.existing.read_text(encoding="utf-8")
         generated_source = args.generated.read_text(encoding="utf-8")
-        merged, changed, unknown = merge(existing_source, generated_source)
+        if args.mode == "variant" and (args.output.exists() or args.output.resolve() in {args.existing.resolve(), args.generated.resolve()}):
+            raise ValueError("A variant requires a new output path; original versions are never overwritten.")
+        if args.base and args.output.resolve() == args.base.resolve():
+            raise ValueError("Output must not overwrite the common base.")
+        if args.no_backup and args.output.exists():
+            raise ValueError("An existing output requires a recoverable backup.")
+        report_path = args.report or args.output.with_suffix(".reconciliation.json")
+        if report_path.resolve() in {p.resolve() for p in (args.existing, args.generated, args.output, args.base) if p}:
+            raise ValueError("Report must not overwrite an input or output HTML.")
+        merged, report = reconcile(existing_source, generated_source,
+                                   args.base.read_text(encoding="utf-8") if args.base else None, args.scope)
+        report["mode"] = args.mode
+        report["inputs"] = {"user": hashlib.sha256(existing_source.encode()).hexdigest(),
+                            "candidate": hashlib.sha256(generated_source.encode()).hexdigest()}
+        if args.base:
+            report["inputs"]["base"] = hashlib.sha256(args.base.read_bytes()).hexdigest()
+        write_atomic(report_path, json.dumps(report, ensure_ascii=False, indent=2)+"\n")
+        if merged is None:
+            raise ValueError(f"Merge blocked: {len(report['conflicts'])} conflict(s); resolve {report_path} before writing.")
         backup = None
         if args.output.exists() and not args.no_backup:
             backup = backup_file(args.output, args.backup_dir)
@@ -321,14 +426,9 @@ def main() -> int:
         print(f"ERROR: {error}", file=sys.stderr)
         return 1
 
-    print(f"Merged {len(changed)} browser-edited field(s) into {args.output}")
+    print(f"Reconciled into {args.output}; decisions: {report_path}")
     if backup:
         print(f"Backup: {backup}")
-    if unknown:
-        print(
-            "Warning: preserved fields without baselines: " + ", ".join(unknown),
-            file=sys.stderr,
-        )
     return 0
 
 

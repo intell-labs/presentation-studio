@@ -7,6 +7,8 @@ import argparse
 import json
 import re
 from pathlib import Path
+from design_contract import design_errors, artifact_errors
+from validate_evidence import evidence_errors
 
 
 PHASE_GATES = {
@@ -38,6 +40,9 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("project", type=Path)
     parser.add_argument("--phase", choices=PHASE_GATES, default="delivery")
+    parser.add_argument("--html", type=Path, help="Exact final HTML; required at delivery")
+    parser.add_argument("--qa-report", type=Path, help="Rendered report.json for this HTML")
+    parser.add_argument("--visual-review", type=Path, help="Separate reviewed visual-review.json")
     args = parser.parse_args()
     data = json.loads(args.project.read_text(encoding="utf-8"))
     errors: list[str] = []
@@ -46,8 +51,32 @@ def main() -> int:
     missing = sorted(REQUIRED_TOP_LEVEL - set(data))
     errors.extend(f"Missing top-level key: {key}" for key in missing)
 
-    if data.get("schema_version") != "1.4":
-        errors.append("schema_version must be 1.4.")
+    if data.get("schema_version") != "1.5":
+        errors.append("schema_version must be 1.5; migrate using references/enhancement-contract.md.")
+
+    if args.phase in {"style", "build", "delivery"}:
+        errors.extend(design_errors(data))
+        visual_system = data.get("design_contract", {}).get("visual_system", {})
+        for key in ("backgrounds", "gradients", "icons", "surfaces", "image_treatment"):
+            decision = visual_system.get(key, {})
+            if decision.get("decision") not in {"keep", "adapt", "remove", "not-applicable"} or not decision.get("reason"):
+                errors.append(f"design.visual-system: record the decision and reason for {key}.")
+            if decision.get("decision") in {"keep", "adapt"} and not decision.get("source"):
+                errors.append(f"design.visual-system: {key} needs its reference/source.")
+        readability = data.get("design_contract", {}).get("readability", {})
+        if readability.get("mode") not in {"speaker-led", "reading-first", "mixed"}:
+            errors.append("design.readability: approve the primary usage profile before build.")
+        for key in ("max_words_per_slide", "supporting_text_min_px"):
+            if not isinstance(readability.get(key), (int, float)) or readability[key] <= 0:
+                errors.append(f"design.readability: define {key} for the approved profile.")
+    if args.phase == "delivery":
+        if not all((args.html, args.qa_report, args.visual_review)):
+            errors.append("Delivery needs --html, --qa-report and --visual-review; metadata alone is not evidence.")
+        elif all(p.is_file() for p in (args.html, args.qa_report, args.visual_review)):
+            errors.extend(artifact_errors(args.html, data))
+            errors.extend(evidence_errors(args.html, data, args.qa_report, args.visual_review))
+        else:
+            errors.append("Delivery evidence file is missing.")
 
     brand = data.get("brand", {})
     usage_policy = brand.get("usage_policy", {})

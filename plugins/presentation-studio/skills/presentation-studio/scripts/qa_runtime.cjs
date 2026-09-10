@@ -5,6 +5,11 @@ const fs = require('fs');
 const path = require('path');
 const { pathToFileURL } = require('url');
 const { chromium } = require('playwright');
+const { spawnSync } = require('child_process');
+const { sha256, contractHash, settle, inspectDesign } = require('./design_qa.cjs');
+const { inspectLegibility } = require('./legibility_qa.cjs');
+const { inspectNumbers } = require('./numeric_qa.cjs');
+const { inspectDialogs } = require('./dialog_qa.cjs');
 
 const DEFAULT_VIEWPORTS = [
   { name: 'desktop', width: 1440, height: 900 },
@@ -64,7 +69,7 @@ function makeGallery(report, outputDir) {
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Presentation Studio · Visual QA</title><style>
 :root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#07111e;color:#eef3f8;font:14px/1.45 system-ui,sans-serif}header{position:sticky;top:0;z-index:2;padding:18px 24px;background:#07111ef2;border-bottom:1px solid #ffffff20;backdrop-filter:blur(18px)}h1{margin:0;font-size:22px}header p{margin:5px 0 0;color:#9eb0c2}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:18px;padding:22px}.card{overflow:hidden;border:1px solid #ffffff1c;border-radius:14px;background:#0d1c2c}.card img{display:block;width:100%;aspect-ratio:16/9;object-fit:contain;background:#02070c}.card div{display:flex;justify-content:space-between;gap:12px;padding:11px 13px}.card span{color:#8fa2b5}
-</style></head><body><header><h1>Presentation Studio · Revisión visual completa</h1><p>${report.summary.checks} checks · ${report.summary.failures} fallos · ${report.summary.reviewItems} elementos para revisión</p></header><main class="grid">${cards}</main></body></html>`;
+</style></head><body><header><h1>Presentation Studio · Revisión visual completa</h1><p>${report.summary.renderedStates} estados renderizados · ${report.summary.failures} fallos · ${report.summary.reviewItems} elementos para revisión</p></header><main class="grid">${cards}</main></body></html>`;
 }
 
 async function preparePage(page, url, viewport) {
@@ -97,13 +102,14 @@ async function setTheme(page, theme) {
   await page.evaluate(themeName => {
     const button = document.querySelector(`[data-theme-choice="${themeName}"]`);
     if (button) button.click();
-    else document.body.dataset.theme = themeName;
+    else throw new Error(`Enabled theme button is missing: ${themeName}`);
   }, theme);
-  await page.waitForTimeout(20);
+  await page.waitForFunction(theme => document.body.dataset.theme === theme, theme);
+  await settle(page, '.slide.is-active');
 }
 
 async function inspectActiveSlide(page, context) {
-  return page.evaluate(({ state, mode, theme }) => {
+  const result = await page.evaluate(({ state, mode, theme }) => {
     const EPSILON = 1.5;
     const slide = document.querySelector('.slide.is-active');
     const stage = document.querySelector('#deck-stage');
@@ -225,7 +231,7 @@ async function inspectActiveSlide(page, context) {
     const footer = slide.querySelector('[data-qa-role="footer"],.slide-footer');
     const footerRect = visible(footer) ? rect(footer) : null;
     const boxes = [...slide.querySelectorAll('[data-qa-box]')].filter(visible).map(element => ({ element, rect: rect(element), name: label(element), role: element.dataset.qaRole || '' }));
-    const editables = [...slide.querySelectorAll('[data-edit-id]')].filter(visible);
+    const editables = [...slide.querySelectorAll('[data-edit-id],[data-qa-text],[data-metric-value],[data-metric-label],[data-metric-context]')].filter(visible);
     const texts = editables.flatMap(element => textRects(element).map(value => ({ element, rect: value, name: label(element) })));
     function typographyRole(element) {
       if (element.tagName === 'H1') return 'h1';
@@ -248,7 +254,8 @@ async function inspectActiveSlide(page, context) {
       if (actual.some((value, index) => value !== expected[index])) add('brand-theme-color-shift', 'The active theme mutates the locked brand palette.', { actual, expected, palette: [palette.primary, palette.secondary] });
     }
     if (strategy.inverse_anchor_slides === true && (theme === 'light' || theme === 'dark')) {
-      const background = getComputedStyle(slide).backgroundColor, value = luminance(background), anchor = slide.dataset.tone === 'anchor';
+      const background = getComputedStyle(slide).backgroundColor, value = luminance(background), planned = project.slides?.find(s => s.id === slide.id), anchor = planned?.tone === 'anchor';
+      if (!planned || (slide.dataset.tone || 'content') !== planned.tone) add('design.anchor', 'DOM anchor assignment does not match the approved contract.');
       const expectedLight = theme === 'light' ? !anchor : anchor;
       if (value !== null && ((expectedLight && value < .62) || (!expectedLight && value > .38))) add('theme-tone-polarity', `${anchor ? 'Anchor' : 'Content'} slide polarity is inconsistent with the ${theme} theme.`, { background, luminance: value, expectedLight, anchor });
     }
@@ -476,6 +483,12 @@ async function inspectActiveSlide(page, context) {
       stats: { boxes: boxes.length, textRects: texts.length, marks: marks.length, mentions: mentionNodes.length },
     };
   }, context);
+  const project = await page.evaluate(()=>JSON.parse(document.querySelector('#presentation-project-data').textContent));
+  const legibility = await inspectLegibility(page,project);
+  const numeric = await inspectNumbers(page);
+  result.issues.push(...legibility.issues,...numeric.issues);
+  result.stats.coverage = {...legibility.coverage,numeric:numeric.coverage};
+  return result;
 }
 
 async function inspectRuntimeMenu(page, mode) {
@@ -485,7 +498,7 @@ async function inspectRuntimeMenu(page, mode) {
     const menu = document.querySelector('#control-menu');
     if (menu?.hidden) trigger?.click();
   }, mode);
-  await page.waitForTimeout(35);
+  await settle(page, '#control-menu');
   return page.evaluate(requestedMode => {
     const failures = [], add = (code, message, details = {}) => failures.push({ code, message, slide: 'runtime-menu', state: 0, mode: requestedMode, theme: document.body.dataset.theme, ...details });
     const visible = element => { if (!element) return false; const style = getComputedStyle(element), value = element.getBoundingClientRect(); return !element.hidden && style.display !== 'none' && style.visibility !== 'hidden' && Number(style.opacity) > .01 && value.width > .5 && value.height > .5; };
@@ -571,6 +584,12 @@ async function inspectContextualTextToolbar(page, viewport) {
 }
 
 async function inspectContextualVisualToolbar(page, viewport) {
+  const targetSlide = await page.evaluate(() => {
+    const slide = document.querySelector('[data-style-id]')?.closest('.slide');
+    return slide ? {id:slide.id, state:slide.querySelectorAll('[data-present-step="required"]').length} : null;
+  });
+  if (!targetSlide) {const result=[];result.notApplicable='No styleable component in this deck';return result;}
+  await gotoState(page, targetSlide.id, targetSlide.state);
   await page.evaluate(() => {
     document.body.dataset.viewMode = 'author';
     if (!document.body.classList.contains('edit-mode')) document.querySelector('#toggle-edit')?.click();
@@ -607,24 +626,32 @@ async function capture(page, outputDir, label, kind, screenshots, enabled) {
   if (!enabled) return;
   const file = path.join(outputDir, `${safeName(label)}.png`);
   await page.screenshot({ path: file, fullPage: false });
-  screenshots.push({ path: file, label, kind });
+  screenshots.push({ path: file, label, kind, sha256: sha256(fs.readFileSync(file)) });
 }
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (!fs.existsSync(args.html)) throw new Error(`HTML not found: ${args.html}`);
   fs.mkdirSync(args.outputDir, { recursive: true });
-  const projectFile = readProject(args);
+  const source = fs.readFileSync(args.html, 'utf8');
+  const embedded = JSON.parse(source.match(/<script\b[^>]*id=["']presentation-project-data["'][^>]*>([\s\S]*?)<\/script>/i)?.[1] || '{}');
+  const projectFile = readProject(args) || embedded;
+  const staticCheck = spawnSync(process.env.PYTHON || 'python3', [path.join(__dirname, 'validate_html.py'), args.html, '--strict'], { encoding: 'utf8' });
   const browser = await chromium.launch({ headless: true, executablePath: args.chrome });
   const context = await browser.newContext({ reducedMotion: 'reduce' });
   const baseUrl = pathToFileURL(args.html).href;
-  const report = { html: args.html, project: args.project, generatedAt: new Date().toISOString(), runs: [], failures: [], review: [], screenshots: [] };
+  const report = { html: args.html, html_sha256: sha256(fs.readFileSync(args.html)), contract_sha256: contractHash(projectFile), project: args.project, generatedAt: new Date().toISOString(), runs: [], failures: [], review: [], screenshots: [] };
+  if (staticCheck.status !== 0) {
+    const messages = (staticCheck.stdout || staticCheck.stderr || staticCheck.error?.message || 'Static validation failed').trim().split('\n').filter(l => l.startsWith('ERROR:'));
+    for (const message of messages.length ? messages : ['Static validation could not run']) report.failures.push({code: message.includes('assets.') ? 'assets.static' : message.includes('design.') ? 'design.static' : 'structure.static', message});
+  }
+  if (contractHash(embedded) !== contractHash(projectFile)) report.failures.push({code:'design.contract-drift', message:'Embedded and external contracts differ.'});
   try {
     const manifestPage = await context.newPage();
     await preparePage(manifestPage, baseUrl, DEFAULT_VIEWPORTS[0]);
     const manifest = await deckManifest(manifestPage);
     await manifestPage.close();
-    const project = projectFile || manifest.project;
+    const project = projectFile;
     const configured = project.visual_qa?.required_viewports || DEFAULT_VIEWPORTS;
     const viewports = DEFAULT_VIEWPORTS.map(fallback => configured.find(item => item.name === fallback.name) || fallback);
 
@@ -635,11 +662,21 @@ async function main() {
         for (let state = 0; state <= slide.requiredStates; state += 1) {
           await gotoState(page, slide.id, state);
           const result = await inspectActiveSlide(page, { state, mode: 'audience', theme: await page.$eval('body', body => body.dataset.theme) });
+          if (state === slide.requiredStates) result.issues.push(...await inspectDesign(page, project));
           const label = `${viewport.name}-audience-${slide.id}-estado-${String(state).padStart(2, '0')}`;
           report.runs.push({ label, viewport, slide: slide.id, state, mode: 'audience', theme: await page.$eval('body', body => body.dataset.theme), ...result.stats });
           report.failures.push(...result.issues.map(issue => ({ viewport: viewport.name, ...issue })));
           report.review.push(...result.review.map(issue => ({ viewport: viewport.name, ...issue })));
           await capture(page, args.outputDir, label, 'all-states', report.screenshots, args.screenshots);
+          if(state===slide.requiredStates){
+            const dialogs=await inspectDialogs(page,project,async result=>{
+              await capture(page,args.outputDir,`${label}-dialog-${result.dialog}-${result.state}`,'content-dialog',report.screenshots,args.screenshots);
+            });
+            for(const result of dialogs){
+              if(result.state!=='interaction')report.runs.push({label:`${label}-dialog-${result.dialog}-${result.state}`,viewport,slide:slide.id,state,mode:'audience',theme:await page.$eval('body',body=>body.dataset.theme),dialog:result.dialog,dialogState:result.state,coverage:result.coverage});
+              report.failures.push(...result.issues.map(issue=>({viewport:viewport.name,...issue})));
+            }
+          }
         }
       }
       await page.close();
@@ -679,7 +716,7 @@ async function main() {
       await preparePage(visualToolbarPage, `${baseUrl}?author=1`, viewport);
       const visualFailures = await inspectContextualVisualToolbar(visualToolbarPage, viewport);
       const visualLabel = `${viewport.name}-author-contextual-visual-toolbar`;
-      report.runs.push({ label: visualLabel, viewport, slide: 'contextual-visual-toolbar', state: 0, mode: 'author', theme: await visualToolbarPage.$eval('body', body => body.dataset.theme), contextualVisualChecks: true });
+      report.runs.push({ label: visualLabel, viewport, slide: 'contextual-visual-toolbar', state: 0, mode: 'author', theme: await visualToolbarPage.$eval('body', body => body.dataset.theme), contextualVisualChecks: !visualFailures.notApplicable, notApplicable: visualFailures.notApplicable });
       report.failures.push(...visualFailures.map(issue => ({ viewport: viewport.name, ...issue })));
       await capture(visualToolbarPage, args.outputDir, visualLabel, 'contextual-visual-toolbar', report.screenshots, args.screenshots);
       await visualToolbarPage.close();
@@ -700,16 +737,24 @@ async function main() {
 
     const themePage = await context.newPage();
     await preparePage(themePage, baseUrl, DEFAULT_VIEWPORTS[0]);
-    for (const theme of ['light', 'dark', 'custom']) {
+    for (const theme of project.appearance.available_themes) {
       await setTheme(themePage, theme);
       for (const slide of manifest.slides) {
         await gotoState(themePage, slide.id, slide.requiredStates);
         const result = await inspectActiveSlide(themePage, { state: slide.requiredStates, mode: 'audience', theme });
+        result.issues.push(...await inspectDesign(themePage, project));
         const label = `desktop-theme-${theme}-${slide.id}-final`;
         report.runs.push({ label, viewport: DEFAULT_VIEWPORTS[0], slide: slide.id, state: slide.requiredStates, mode: 'audience', theme, ...result.stats });
         report.failures.push(...result.issues.map(issue => ({ viewport: 'desktop', ...issue })));
         report.review.push(...result.review.map(issue => ({ viewport: 'desktop', ...issue })));
         await capture(themePage, args.outputDir, label, 'theme-final', report.screenshots, args.screenshots);
+        const dialogs=await inspectDialogs(themePage,project,async result=>{
+          await capture(themePage,args.outputDir,`${label}-dialog-${result.dialog}-${result.state}`,'content-dialog',report.screenshots,args.screenshots);
+        });
+        for(const result of dialogs){
+          if(result.state!=='interaction')report.runs.push({label:`${label}-dialog-${result.dialog}-${result.state}`,viewport:DEFAULT_VIEWPORTS[0],slide:slide.id,state:slide.requiredStates,mode:'audience',theme,dialog:result.dialog,dialogState:result.state,coverage:result.coverage});
+          report.failures.push(...result.issues.map(issue=>({viewport:'desktop',...issue})));
+        }
       }
     }
     await themePage.close();
@@ -717,19 +762,28 @@ async function main() {
     await browser.close();
   }
 
+  if (sha256(fs.readFileSync(args.html)) !== report.html_sha256) report.failures.push({code:'structure.source-changed',message:'HTML changed during QA; rerun on the final revision.'});
   const uniqueFailures = [...new Map(report.failures.map(item => [JSON.stringify(item), item])).values()];
   const uniqueReview = [...new Map(report.review.map(item => [JSON.stringify(item), item])).values()];
   report.failures = uniqueFailures;
   report.review = uniqueReview;
+  const bucket = issue => /^(numeric|editorial)\./.test(issue.code) ? 'editorial_numeric' : issue.code?.startsWith('assets.') ? 'resources' : issue.code?.startsWith('design.') || issue.code === 'theme-tone-polarity' ? 'decision_fidelity' : issue.code?.startsWith('structure.') || /menu|editor|toolbar|runtime/.test(issue.code) ? 'structure_runtime' : 'geometry';
+  report.layers = Object.fromEntries(['structure_runtime','geometry','resources','decision_fidelity','editorial_numeric'].map(layer => {
+    const failures = report.failures.filter(i => bucket(i) === layer);
+    return [layer, {status: failures.length ? 'failed' : 'passed', failures: failures.length}];
+  }));
+  report.layers.visual_judgment = {status:'pending', reason:'Requires a separate, screenshot-based visual-review.json for this exact HTML.'};
   report.summary = {
-    checks: report.runs.length,
+    renderedStates: report.runs.length,
+    criterionFamilies: ['structure/runtime','geometry/overlap','brand/resources','decision-fidelity','contrast','shape-containment','clearance','shared-regions','audience-exposure','numeric-model'],
+    unmeasured: report.runs.flatMap(r => r.coverage?.unmeasured || []),
     failures: report.failures.length,
     reviewItems: report.review.length,
     screenshots: report.screenshots.length,
   };
   fs.writeFileSync(path.join(args.outputDir, 'report.json'), JSON.stringify(report, null, 2) + '\n');
   fs.writeFileSync(path.join(args.outputDir, 'review.html'), makeGallery(report, args.outputDir));
-  console.log(`Rendered visual QA: ${report.summary.checks} states, ${report.summary.failures} failure(s), ${report.summary.reviewItems} review item(s), ${report.summary.screenshots} screenshot(s)`);
+  console.log(`Automated rendered QA (visual approval pending): ${report.summary.renderedStates} states, ${report.summary.failures} failure(s), ${report.summary.reviewItems} review item(s), ${report.summary.screenshots} screenshot(s)`);
   console.log(path.join(args.outputDir, 'report.json'));
   if (report.failures.length) {
     for (const failure of report.failures.slice(0, 40)) console.error(`FAIL [${failure.viewport}/${failure.slide}/state-${failure.state}] ${failure.code}: ${failure.message}`);

@@ -117,9 +117,11 @@ def main() -> int:
         project = Path(temporary) / "presentation-project.json"
         if project.exists():
             data = read_json(project)
-            if data.get("schema_version") != "1.4":
+            if data.get("schema_version") != "1.5":
                 errors.append("Starter project schema version is stale.")
             data["project"]["title"] = "Validation deck"
+            data["design_contract"]["readability"].update({"mode":"speaker-led", "max_words_per_slide":65, "supporting_text_min_px":24})
+            data["design_contract"]["visual_system"] = {key:{"decision":"not-applicable", "reason":"Structural fixture", "source":""} for key in data["design_contract"]["visual_system"]}
             data["project"]["presentation_type"] = "corporate"
             data["audience"]["description"] = "Decision makers"
             data["audience"]["prior_knowledge"] = "General context"
@@ -130,6 +132,8 @@ def main() -> int:
             data["narrative"]["arc"] = "Context to decision"
             data["slides"] = [{
                 "id": "hoja-01",
+                "role": "cover",
+                "tone": "anchor",
                 "purpose": "Open",
                 "takeaway": "Why now",
                 "title": "Decision",
@@ -181,7 +185,7 @@ def main() -> int:
                 str(SKILL / "scripts" / "validate_project.py"),
                 str(project),
                 "--phase",
-                "delivery",
+                "build",
             ], errors)
 
     suite = unittest.defaultTestLoader.discover(str(ROOT / "tests" / "structural"))

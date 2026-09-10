@@ -8,6 +8,7 @@ import json
 import re
 from html.parser import HTMLParser
 from pathlib import Path
+from design_contract import artifact_errors
 
 
 CORE_RUNTIME_IDS = (
@@ -68,6 +69,8 @@ class DeckParser(HTMLParser):
         self.slide_ids: list[str] = []
         self.edit_ids: list[str] = []
         self.style_ids: list[str] = []
+        self.dialog_ids: set[str] = set()
+        self.dialog_targets: list[str] = []
         self.references: list[tuple[str, str, str]] = []
         self.meta: dict[str, str] = {}
         self.has_project_data = False
@@ -77,6 +80,10 @@ class DeckParser(HTMLParser):
         identifier = values.get("id")
         if identifier:
             self.ids.append(identifier)
+        if tag == "dialog" and identifier:
+            self.dialog_ids.add(identifier)
+        if "data-dialog-open" in values:
+            self.dialog_targets.append(values["data-dialog-open"] or "")
         classes = set((values.get("class") or "").split())
         if tag == "section" and ("slide" in classes or identifier and identifier.startswith("hoja-")):
             self.slide_ids.append(identifier or "")
@@ -115,7 +122,7 @@ class TextCoverageParser(HTMLParser):
         parent = self.stack[-1] if self.stack else ("", False, False, False)
         in_slide = parent[1] or "slide" in classes or (values.get("id") or "").startswith("hoja-")
         in_edit = parent[2] or bool(values.get("data-edit-id"))
-        ignored = parent[3] or tag in {"script", "style", "svg", "title"} or bool(classes & {"notes", "sr-only"})
+        ignored = parent[3] or tag in {"script", "style", "svg", "title"} or bool(classes & {"notes", "sr-only"}) or any(key in values for key in ("data-metric-value", "data-metric-label", "data-metric-context"))
         if tag not in self.VOID:
             self.stack.append((tag, in_slide, in_edit, ignored))
 
@@ -188,6 +195,8 @@ def main() -> int:
         errors.append("Duplicate data-edit-id values: " + ", ".join(duplicate_edit_ids))
     if duplicate_style_ids:
         errors.append("Duplicate data-style-id values: " + ", ".join(duplicate_style_ids))
+    for target in set(deck.dialog_targets) - deck.dialog_ids:
+        errors.append(f"Dialog trigger has no matching dialog: {target or '(empty target)'}")
     for tag, attribute, ref in deck.references:
         if ref.startswith(("/Users/", "file://", "C:\\")):
             errors.append(f"Absolute local reference: {ref}")
@@ -250,8 +259,9 @@ def main() -> int:
     if project_match:
         try:
             project_data = json.loads(project_match.group(1))
-            if project_data.get("schema_version") != "1.4":
-                errors.append("Embedded project data must use schema_version 1.4.")
+            if project_data.get("schema_version") != "1.5":
+                errors.append("Embedded project data must use schema_version 1.5; migrate the contract before strict validation.")
+            errors.extend(artifact_errors(args.html, project_data))
             features = project_data.get("features", {})
             if features.get("default_view") != "audience":
                 warnings.append("Audience view is not the default delivery mode.")
